@@ -1,0 +1,24 @@
+plugins {
+    id 'java'
+    id 'antlr'
+}
+
+group = 'org.key-project'
+version = '2.12.4-smartML'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+
+    implementation project(":key.ncore")
+    implementation project(":key.ncore.calculus")
+
+    testImplementation platform('org.junit:junit-bom:5.10.0')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+}
+
+test {
+    useJUnitPlatform()
+}
