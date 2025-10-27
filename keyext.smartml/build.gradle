@@ -30,14 +30,14 @@ sourceSets.main.java.srcDirs(String.valueOf(projectDir) + '/build/generated-src/
 
 tasks.register('runAntlr4Key', JavaExec) {
     //see incremental task api, prevents rerun if nothing has changed.
-    inputs.files "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLLexer.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLParser.g4"
+    inputs.files "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLLexer.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLParser.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/SmartMLParser.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/SmartMLLexer.g4"
     outputs.dir antlr4OutputKey
     classpath = configurations.antlr4
     mainClass.set("org.antlr.v4.Tool")
     args = ["-visitor",
             "-lib", "../key.ncore/src/main/antlr/",
             "-Xexact-output-dir", "-o", antlr4OutputKey,
-            "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLLexer.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLParser.g4"]
+            "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLLexer.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/KeYSmartMLDLParser.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/SmartMLLexer.g4", "src/main/antlr/de/tu_darmstadt/smartml/parser/SmartMLParser.g4"]
     doFirst {
         file(antlr4OutputKey).mkdirs()
         println("create $antlr4OutputKey")

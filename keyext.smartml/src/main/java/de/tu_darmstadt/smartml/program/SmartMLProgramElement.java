@@ -1,5 +1,6 @@
 package de.tu_darmstadt.smartml.program;
 
+import de.tu_darmstadt.smartml.program.visitor.Visitor;
 import org.key_project.logic.SyntaxElement;
 
 /// interface at the root of any program element representing
@@ -25,4 +26,5 @@ public interface SmartMLProgramElement extends SyntaxElement {
         return hash;
     }
 
+    void visit(Visitor v);
 }
