@@ -529,6 +529,10 @@ public class TermBuilder {
             new ImmutableArray<>(substVar));
     }
 
+    public Term var(ProgramVariable pv) {
+        return tf.createTerm(pv);
+    }
+
     /*
      * /// Creates a program variable for the result. Take care to register it in the namespaces.
      * public ProgramVariable resultVar(ProgramFunction fn, boolean makeNameUnique) {
