@@ -62,7 +62,7 @@ public class KeYIO {
     }
 
     /**
-     * Given an input stream, this function returns an term if parsable.
+     * Given an input stream, this function returns a term if parsable.
      *
      * @param stream a valid stream
      * @return a valid term

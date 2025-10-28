@@ -35,13 +35,13 @@ public final class ParsingFacade {
     private ParsingFacade() {
     }
 
-    /// Extracts the choice information from the given the parsed files `ctxs`.
+    /// Extracts the choice information from the given the parsed files `contexts`.
     ///
-    /// @param ctxs non-null list
-    public static @NonNull ChoiceInformation getChoices(@NonNull List<KeYAst.File> ctxs) {
+    /// @param contexts non-null list
+    public static @NonNull ChoiceInformation getChoices(@NonNull List<KeYAst.File> contexts) {
         ChoiceInformation ci = new ChoiceInformation();
         ChoiceFinder finder = new ChoiceFinder(ci);
-        ctxs.forEach(it -> it.accept(finder));
+        contexts.forEach(it -> it.accept(finder));
         return ci;
     }
 
@@ -73,7 +73,7 @@ public final class ParsingFacade {
     }
 
     public static List<KeYAst.File> parseFiles(URL url) throws IOException {
-        List<KeYAst.File> ctxs = new LinkedList<>();
+        List<KeYAst.File> contexts = new LinkedList<>();
         ArrayDeque<URL> queue = new ArrayDeque<>();
         queue.push(url);
         Set<URL> reached = new HashSet<>();
@@ -82,7 +82,7 @@ public final class ParsingFacade {
             url = queue.pop();
             reached.add(url);
             KeYAst.File ctx = parseFile(url);
-            ctxs.add(ctx);
+            contexts.add(ctx);
             Collection<RuleSource> includes = ctx.getIncludes(url).getRuleSets();
             for (RuleSource u : includes) {
                 if (!reached.contains(u.url())) {
@@ -90,7 +90,7 @@ public final class ParsingFacade {
                 }
             }
         }
-        return ctxs;
+        return contexts;
     }
 
     public static KeYAst.File parseFile(Path file) throws IOException {
@@ -133,7 +133,7 @@ public final class ParsingFacade {
 
     public static KeYAst.Seq parseSequent(CharStream stream) {
         KeYSmartMLDLParser p = createParser(stream);
-        var seq = new KeYAst.Seq(p.seqEOF().seq());
+        final var seq = new KeYAst.Seq(p.seqEOF().seq());
         // p.getErrorReporter().throwException();
         return seq;
     }
@@ -142,7 +142,7 @@ public final class ParsingFacade {
      * /// A configuration corresponds to the grammar rule `cfile` in the `KeYParser.g4`.
      * ///
      * /// @param file non-null [Path] object
-     * /// @return monad that encapsluate the ParserRuleContext
+     * /// @return monad that encapsulate the ParserRuleContext
      * /// @throws IOException if the file is not found or not readable.
      * /// @throws BuildingException if the file is syntactical broken.
      * public static KeYAst.ConfigurationFile parseConfigurationFile(Path file) throws IOException {
@@ -153,7 +153,7 @@ public final class ParsingFacade {
      * /// A configuration corresponds to the grammar rule `cfile` in the `KeYParser.g4`.
      * ///
      * /// @param stream non-null [CharStream] object
-     * /// @return monad that encapsluate the ParserRuleContext
+     * /// @return monad that encapsulate the ParserRuleContext
      * /// @throws BuildingException if the file is syntactical broken.
      * public static KeYAst.ConfigurationFile parseConfigurationFile(CharStream stream) {
      * KeYSmartMLDLParser p = createParser(stream);
