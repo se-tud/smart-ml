@@ -12,6 +12,7 @@ import de.tu_darmstadt.smartml.logic.TermFactory;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.program.SmartMLModel;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.theory.TheoryInfo;
 
 /// Service class providing access to
 /// * namespaces
@@ -65,5 +66,9 @@ public class Services implements LogicServices {
 
     public SmartMLModel getSmartMLInfo() {
         return smartMLModel;
+    }
+
+    public TheoryInfo getLDTs() {
+        throw new RuntimeException("Not implemented yet");
     }
 }

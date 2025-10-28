@@ -32,12 +32,14 @@ import de.tu_darmstadt.smartml.logic.SmartMLBlock;
 import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
 import de.tu_darmstadt.smartml.logic.TermFactory;
 import de.tu_darmstadt.smartml.logic.op.*;
+import de.tu_darmstadt.smartml.parser.KeYSmartMLDLLexer;
 import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser;
 import de.tu_darmstadt.smartml.program.SchemaSmartMLReader;
 import de.tu_darmstadt.smartml.program.SmartMLReader;
 import de.tu_darmstadt.smartml.proof.calculus.SmartMLSequentKit;
 import de.tu_darmstadt.smartml.rule.inst.sv.VariableSV;
 import de.tu_darmstadt.smartml.services.Services;
+import de.tu_darmstadt.smartml.theory.LDT;
 import de.tu_darmstadt.smartml.util.parsing.BuildingException;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
@@ -687,9 +689,10 @@ public class ExpressionBuilder extends DefaultBuilder {
         if (ctx.GREATEREQUAL() != null) {
             op_name = "geq";
         }
-        throw new RuntimeException("Not implemented yet: " + op_name);
-        // return binaryLDTSpecificTerm(ctx, op_name, termL, termR);
+        return binaryLDTSpecificTerm(ctx, op_name, termL, termR);
     }
+
+
 
     @Override
     public @Nullable Object visitWeak_arith_term(KeYSmartMLDLParser.Weak_arith_termContext ctx) {
@@ -697,25 +700,40 @@ public class ExpressionBuilder extends DefaultBuilder {
         if (ctx.op.isEmpty()) {
             return termL;
         }
-        /*
-         * List<Term> terms = mapOf(ctx.b);
-         * Term last = termL;
-         * for (int i = 0; i < terms.size(); i++) {
-         * String opname = "";
-         * switch (ctx.op.get(i).getType()) {
-         * case KeYSmartMLDLLexer.UTF_INTERSECT -> opname = "intersect";
-         * case KeYSmartMLDLLexer.UTF_SETMINUS -> opname = "setMinus";
-         * case KeYSmartMLDLLexer.UTF_UNION -> opname = "union";
-         * case KeYSmartMLDLLexer.PLUS -> opname = "add";
-         * case KeYSmartMLDLLexer.MINUS -> opname = "sub";
-         * default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
-         * }
-         * Term cur = terms.get(i);
-         * last = binaryLDTSpecificTerm(ctx, opname, last, cur);
-         * }
-         * return last;
-         */
-        throw new RuntimeException("Not implemented yet: " + ctx.getText());
+
+        List<Term> terms = mapOf(ctx.b);
+        Term last = termL;
+        for (int i = 0; i < terms.size(); i++) {
+            String opname = "";
+            switch (ctx.op.get(i).getType()) {
+                case KeYSmartMLDLLexer.UTF_INTERSECT -> opname = "intersect";
+                case KeYSmartMLDLLexer.UTF_SETMINUS -> opname = "setMinus";
+                case KeYSmartMLDLLexer.UTF_UNION -> opname = "union";
+                case KeYSmartMLDLLexer.PLUS -> opname = "add";
+                case KeYSmartMLDLLexer.MINUS -> opname = "sub";
+                default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
+            }
+            Term cur = terms.get(i);
+            last = binaryLDTSpecificTerm(ctx, opname, last, cur);
+        }
+        return last;
+    }
+
+    private Term binaryLDTSpecificTerm(ParserRuleContext ctx, String opname, Term last, Term cur) {
+        Sort sort = last.sort();
+        if (sort == null) {
+            semanticError(ctx, "No sort for %s", last);
+        }
+        LDT ldt = services.getLDTs().getLDTFor(sort);
+        if (ldt == null) {
+            // falling back to integer ldt (for instance for untyped schema variables)
+            ldt = services.getLDTs().getIntLDT();
+        }
+        Function op = ldt.getFunctionFor(opname, services);
+        if (op == null) {
+            semanticError(ctx, "Could not find function symbol '%s' for sort '%s'.", opname, sort);
+        }
+        return binaryTerm(ctx, op, last, cur);
     }
 
     @Override
@@ -750,28 +768,26 @@ public class ExpressionBuilder extends DefaultBuilder {
         if (sort == null) {
             semanticError(ctx, "No sort for term '%s'", term);
         }
-        throw new RuntimeException("Not implemented yet: " + term);
-        /*
-         * var ldt = services.getLDTs().getLDTFor(sort);
-         *
-         * if (ldt == null) {
-         * // falling back to integer ldt (for instance for untyped schema variables)
-         * ldt = services.getLDTs().getIntLDT();
-         * }
-         *
-         * assert ctx.op.size() == ctx.b.size();
-         *
-         * for (int i = 0; i < termL.size(); i++) {
-         * var opName = ctx.op.get(i).getType() == KeYSmartMLDLLexer.PERCENT ? "mod" : "div";
-         * Function op = ldt.getFunctionFor(opName, services);
-         * if (op == null) {
-         * semanticError(ctx, "Could not find function symbol '%s' for sort '%s'.", opName,
-         * sort);
-         * }
-         * term = binaryTerm(ctx, op, term, termL.get(i));
-         * }
-         * return term;
-         */
+
+        var ldt = services.getLDTs().getLDTFor(sort);
+
+        if (ldt == null) {
+            // falling back to integer ldt (for instance for untyped schema variables)
+            ldt = services.getLDTs().getIntLDT();
+        }
+
+        assert ctx.op.size() == ctx.b.size();
+
+        for (int i = 0; i < termL.size(); i++) {
+            var opName = ctx.op.get(i).getType() == KeYSmartMLDLLexer.PERCENT ? "mod" : "div";
+            Function op = ldt.getFunctionFor(opName, services);
+            if (op == null) {
+                semanticError(ctx, "Could not find function symbol '%s' for sort '%s'.", opName,
+                    sort);
+            }
+            term = binaryTerm(ctx, op, term, termL.get(i));
+        }
+        return term;
     }
 
     @Override
@@ -811,37 +827,35 @@ public class ExpressionBuilder extends DefaultBuilder {
         Term result = accept(ctx.sub);
         assert result != null;
         if (ctx.MINUS() != null) {
-            throw new RuntimeException("Not implemented yet: " + ctx.MINUS().getText());
-            /*
-             *
-             * Operator Z = functions().lookup("Z");
-             * if (result.op() == Z) {
-             * // weigl: rewrite neg(Z(1(#)) to Z(neglit(1(#))
-             * // This mimics the old KeYRustyParser behaviour. Unknown if necessary.
-             * final Function neglit = services.getLDTs().getIntLDT().getNegativeNumberSign();
-             * final Term num = result.sub(0);
-             * return capsulateTf(ctx,
-             * () -> getTermFactory().createTerm(Z, getTermFactory().createTerm(neglit, num)));
-             * } else if (result.sort() != SmartMLDLTheory.FORMULA) {
-             * Sort sort = result.sort();
-             * if (sort == null) {
-             * semanticError(ctx, "No sort for %s", result);
-             * }
-             * LDT ldt = services.getLDTs().getLDTFor(sort);
-             * if (ldt == null) {
-             * // falling back to integer ldt (for instance for untyped schema variables)
-             * ldt = services.getLDTs().getIntLDT();
-             * }
-             * // TODO(DD): Can this be simplified?
-             * Function op = ldt.getFunctionFor("neg", services);
-             * if (op == null) {
-             * semanticError(ctx, "Could not find function symbol 'neg' for sort '%s'.", sort);
-             * }
-             * return capsulateTf(ctx, () -> getTermFactory().createTerm(op, result));
-             * } else {
-             * semanticError(ctx, "Formulas cannot be prefixed with '-'");
-             * }
-             */
+            // throw new RuntimeException("Not implemented yet: " + ctx.MINUS().getText());
+            Operator Z = functions().lookup("Z");
+            if (result.op() == Z) {
+                // weigl: rewrite neg(Z(1(#)) to Z(neglit(1(#))
+                // This mimics the old KeYRustyParser behaviour. Unknown if necessary.
+                final Function neglit = services.getLDTs().getIntLDT().getNegativeNumberSign();
+                final Term num = result.sub(0);
+                return capsulateTf(ctx,
+                    () -> getTermFactory().createTerm(Z, getTermFactory().createTerm(neglit, num)));
+            } else if (result.sort() != SmartMLDLTheory.FORMULA) {
+                Sort sort = result.sort();
+                if (sort == null) {
+                    semanticError(ctx, "No sort for %s", result);
+                }
+                LDT ldt = services.getLDTs().getLDTFor(sort);
+                if (ldt == null) {
+                    // falling back to integer ldt (for instance for untyped schema variables)
+                    ldt = services.getLDTs().getIntLDT();
+                }
+                // TODO(DD): Can this be simplified?
+                Function op = ldt.getFunctionFor("neg", services);
+                if (op == null) {
+                    semanticError(ctx, "Could not find function symbol 'neg' for sort '%s'.", sort);
+                }
+                return capsulateTf(ctx, () -> getTermFactory().createTerm(op, result));
+            } else {
+                semanticError(ctx, "Formulas cannot be prefixed with '-'");
+            }
+
         }
         return result;
     }
