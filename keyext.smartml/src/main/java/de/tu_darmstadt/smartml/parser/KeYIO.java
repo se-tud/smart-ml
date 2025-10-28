@@ -36,7 +36,7 @@ public class KeYIO {
 
     private final Services services;
     private final NamespaceSet nss;
-    private Namespace<SchemaVariable> schemaNamespace;
+    private Namespace<@NonNull SchemaVariable> schemaNamespace;
 
     private List<BuildingIssue> warnings = new LinkedList<>();
 
@@ -69,16 +69,16 @@ public class KeYIO {
      * @throws BuildingException if an unrecoverable error during construction or parsing happened
      */
     public @NonNull Term parseExpression(@NonNull CharStream stream) {
-        KeYAst.Term ctx = ParsingFacade.parseExpression(stream);
+        final KeYAst.Term ctx = ParsingFacade.parseExpression(stream);
         return interpretExpression(ctx);
     }
 
     private Term interpretExpression(KeYAst.Term ctx) {
-        ExpressionBuilder visitor = new ExpressionBuilder(services, nss);
+        final ExpressionBuilder visitor = new ExpressionBuilder(services, nss);
         if (schemaNamespace != null) {
             visitor.setSchemaVariables(schemaNamespace);
         }
-        Term t = (Term) ctx.accept(visitor);
+        final Term t = (Term) ctx.accept(visitor);
         warnings = visitor.getBuildingIssues();
         return t;
     }
@@ -92,20 +92,31 @@ public class KeYIO {
      * @throws BuildingException if an unrecoverable error during construction or parsing happened
      */
     public @NonNull Sequent parseSequent(@NonNull CharStream stream) {
-        KeYAst.Seq ctx = ParsingFacade.parseSequent(stream);
-        ExpressionBuilder visitor = new ExpressionBuilder(services, nss);
+        final KeYAst.Seq ctx = ParsingFacade.parseSequent(stream);
+        final ExpressionBuilder visitor = new ExpressionBuilder(services, nss);
         if (schemaNamespace != null) {
             visitor.setSchemaVariables(schemaNamespace);
         }
-        Sequent seq = (Sequent) ctx.accept(visitor);
+        final Sequent seq = (Sequent) ctx.accept(visitor);
         warnings = visitor.getBuildingIssues();
         return seq;
     }
 
+    /**
+     * parses the string representation of a sequent
+     *
+     * @param sequent the String to be parsed
+     * @return the parsed {@link Sequent}
+     */
     public Sequent parseSequent(String sequent) {
         return parseSequent(CharStreams.fromString(sequent));
     }
 
+    /**
+     * returns the services used to load and construct the loaded content
+     *
+     * @return the {@link Services} representing the logic
+     */
     public Services getServices() {
         return services;
     }
@@ -113,8 +124,8 @@ public class KeYIO {
     /**
      * Create a loader instance for the given path.
      *
-     * @param file
-     * @return
+     * @param file the {@link Path} where to find the file to be loaded
+     * @return the {@link Loader} for the file
      */
     public Loader load(Path file) {
         try {
@@ -125,23 +136,34 @@ public class KeYIO {
     }
 
 
+    /**
+     * returns a loader for provided content stream
+     *
+     * @param content an {@link CharStream} to be read in
+     * @return the {@link Loader} for the provided content
+     */
     public Loader load(CharStream content) {
         return new Loader(content, null);
     }
 
+    /**
+     * returns a loader for provided content
+     *
+     * @param content the {@link String} to be read in
+     * @return the {@link Loader} for the provided content
+     */
     public Loader load(String content) {
         return load(CharStreams.fromString(content));
     }
 
-
     /**
      * Create a loader instance for the given path.
      *
-     * @param u
-     * @return
+     * @param url URL where to find the .key-file to be loaded
+     * @return the {@link Loader} of the .key-file
      */
-    public Loader load(URL u) {
-        return new Loader(u);
+    public Loader load(URL url) {
+        return new Loader(url);
     }
 
     /*
