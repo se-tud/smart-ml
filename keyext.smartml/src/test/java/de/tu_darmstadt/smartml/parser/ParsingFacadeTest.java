@@ -107,4 +107,18 @@ class ParsingFacadeTest {
         assertEquals(2, ((LogicVariable) term.sub(0).sub(0).sub(1).op()).getIndex());
     }
 
+
+    @Test
+    void parseSequent() {
+        KeYIO io = new KeYIO(services);
+        final var sequent = io.parseSequent(
+            "\\forall MySort y;\\forall MySort x; q(x, y) ==> \\exists MySort x; p(x)");
+        assertEquals(2, sequent.size());
+        assertEquals(1, sequent.antecedent().size());
+        assertEquals(1, sequent.succedent().size());
+        assertEquals(Quantifier.ALL, sequent.antecedent().get(0).formula().op());
+        assertEquals(Quantifier.ALL, sequent.antecedent().get(0).formula().sub(0).op());
+        assertEquals(Quantifier.EX, sequent.succedent().get(0).formula().op());
+        assertEquals(predicates.get("p"), sequent.succedent().get(0).formula().sub(0).op());
+    }
 }
