@@ -1,19 +1,24 @@
-package de.tu_darmstadt.smartml.logic.op;
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
+package de.tu_darmstadt.smartml.logic.op;
+/*
+ * This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only
+ */
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import de.tu_darmstadt.smartml.logic.SmartMLBlock;
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import org.key_project.logic.Name;
 import org.key_project.logic.TermCreationException;
 
+import de.tu_darmstadt.smartml.logic.SmartMLBlock;
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -22,14 +27,15 @@ import org.jspecify.annotations.Nullable;
 public class SModality extends org.key_project.logic.op.Modality {
     /// keeps track of created modalities
     private static final Map<SmartMLProgramElement, WeakHashMap<SmartMLModalityKind, WeakReference<SModality>>> modalities =
-            new WeakHashMap<>();
+        new WeakHashMap<>();
 
     /// Retrieves the modality of the given useKind and program.
     ///
     /// @param kind the useKind of the modality such as diamond or box
     /// @param smartMLBlock the program of this modality
     /// @return the modality of the given useKind and program.
-    public static synchronized SModality getModality(SmartMLModalityKind kind, SmartMLBlock smartMLBlock) {
+    public static synchronized SModality getModality(SmartMLModalityKind kind,
+            SmartMLBlock smartMLBlock) {
         var kind2mod = modalities.get(smartMLBlock.program());
         final SModality mod;
         WeakReference<SModality> modRef;

@@ -3,18 +3,20 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.op;
 
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.AbstractSortedOperator;
 import org.key_project.logic.op.Modifier;
 import org.key_project.logic.sort.Sort;
 
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import org.jspecify.annotations.NonNull;
+
 
 /// This class defines the logic equality operator `=`. It is a binary predicate accepting
 /// arbitrary terms (of sort "any") as arguments.
-/// It also defines the formula equivalence operator `<->` (which could alternatively be seen as a Junctor).
+/// It also defines the formula equivalence operator `<->` (which could alternatively be seen as a
+/// Junctor).
 public final class Equality extends AbstractSortedOperator {
 
     /// the usual 'equality' operator '='

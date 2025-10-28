@@ -3,13 +3,14 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.sort;
 
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.sort.AbstractSort;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
+
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import org.jspecify.annotations.NonNull;
 
 public class SortImpl extends AbstractSort {
     private ImmutableSet<Sort> ext;

@@ -20,7 +20,6 @@ import de.uka.ilkd.key.logic.op.SortDependingFunction;
 import de.uka.ilkd.key.proof.Goal;
 import de.uka.ilkd.key.proof.Proof;
 import de.uka.ilkd.key.rule.UseDependencyContractRule;
-import de.uka.ilkd.key.rule.metaconstruct.arith.Polynomial;
 import de.uka.ilkd.key.strategy.feature.*;
 import de.uka.ilkd.key.strategy.feature.findprefix.FindPrefixRestrictionFeature;
 import de.uka.ilkd.key.strategy.quantifierHeuristics.ClausesSmallerThanFeature;
@@ -1144,7 +1143,7 @@ public class JavaCardDLStrategy extends AbstractFeatureStrategy {
         } else {
             bindRuleSet(d, "inEqSimp_nonLin", inftyConst());
             // enable restricted non linear ineq handling
-        //    bindRuleSet(d, "testHeuristics", );
+            // bindRuleSet(d, "testHeuristics", );
         }
 
 

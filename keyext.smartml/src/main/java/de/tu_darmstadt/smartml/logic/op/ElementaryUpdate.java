@@ -3,8 +3,9 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.op;
 
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import org.jspecify.annotations.NonNull;
+import java.lang.ref.WeakReference;
+import java.util.WeakHashMap;
+
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.AbstractSortedOperator;
@@ -12,8 +13,8 @@ import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.UpdateableOperator;
 import org.key_project.logic.sort.Sort;
 
-import java.lang.ref.WeakReference;
-import java.util.WeakHashMap;
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import org.jspecify.annotations.NonNull;
 
 public class ElementaryUpdate extends AbstractSortedOperator {
 
@@ -23,7 +24,8 @@ public class ElementaryUpdate extends AbstractSortedOperator {
     private final UpdateableOperator lhs;
 
     private ElementaryUpdate(UpdateableOperator lhs) {
-        super(new Name("elem-update(" + lhs + ")"), new Sort[] { lhs.sort() }, SmartMLDLTheory.UPDATE,
+        super(new Name("elem-update(" + lhs + ")"), new Sort[] { lhs.sort() },
+            SmartMLDLTheory.UPDATE,
             Modifier.NONE);
         this.lhs = lhs;
         assert lhs.arity() == 0;

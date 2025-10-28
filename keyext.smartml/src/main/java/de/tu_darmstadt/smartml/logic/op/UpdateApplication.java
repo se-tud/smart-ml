@@ -3,14 +3,15 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.op;
 
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.AbstractOperator;
 import org.key_project.logic.sort.Sort;
+
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import org.jspecify.annotations.NonNull;
 
 
 /// Singleton class defining a binary operator {u}t that applies updates u to terms, formulas, or

@@ -1,7 +1,8 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic;
 
-import org.jspecify.annotations.NonNull;
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Namespace;
@@ -10,7 +11,11 @@ import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.sort.Sort;
 import org.key_project.prover.rules.RuleSet;
 
-/// Container of namespaces for the logic's signature (sorts, function symbols, predicate symbols etc.)
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+/// Container of namespaces for the logic's signature (sorts, function symbols, predicate symbols
+/// etc.)
 /// as well as calculus related namespaces like rules
 public class NamespaceSet {
 
@@ -18,13 +23,14 @@ public class NamespaceSet {
     private Namespace<@NonNull QuantifiableVariable> varNS = new Namespace<>();
     private Namespace<@NonNull Function> funcNS = new Namespace<>();
     private Namespace<@NonNull RuleSet> ruleSetNS = new Namespace<>();
-//    private Namespace<@NonNull ParametricSortDecl> parametricSortNS = new Namespace<>();
-//    private Namespace<@NonNull ParametricFunctionDecl> parametricFuncNS = new Namespace<>();
-//    private Namespace<@NonNull Choice> choiceNS = new Namespace<>();
+    // private Namespace<@NonNull ParametricSortDecl> parametricSortNS = new Namespace<>();
+    // private Namespace<@NonNull ParametricFunctionDecl> parametricFuncNS = new Namespace<>();
+    // private Namespace<@NonNull Choice> choiceNS = new Namespace<>();
 
     public NamespaceSet() {}
 
-    public NamespaceSet(Namespace<@NonNull Sort> sortNS, Namespace<@NonNull Function> funcNS, Namespace<@NonNull QuantifiableVariable> varNS) {
+    public NamespaceSet(Namespace<@NonNull Sort> sortNS, Namespace<@NonNull Function> funcNS,
+            Namespace<@NonNull QuantifiableVariable> varNS) {
         this.sortNS = sortNS;
         this.varNS = varNS;
         this.funcNS = funcNS;
@@ -68,7 +74,7 @@ public class NamespaceSet {
     @Override
     public String toString() {
         return "Sorts: " + sorts() + "\n" + "Functions: " + functions() + "\n" + "Variables: "
-                + variables() + "\n";
+            + variables() + "\n";
     }
 
     public void setSorts(Namespace<@NonNull Sort> sorts) {

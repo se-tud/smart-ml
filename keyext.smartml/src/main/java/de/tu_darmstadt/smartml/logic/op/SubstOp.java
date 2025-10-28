@@ -3,15 +3,16 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.op;
 
-import de.tu_darmstadt.smartml.logic.Subst;
-import de.tu_darmstadt.smartml.logic.TermBuilder;
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.Term;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.AbstractOperator;
 import org.key_project.logic.sort.Sort;
+
+import de.tu_darmstadt.smartml.logic.Subst;
+import de.tu_darmstadt.smartml.logic.TermBuilder;
+import org.jspecify.annotations.NonNull;
 
 /// Standard first-order substitution operator, resolving clashes but not preventing (usually
 /// unsound) substitution of non-rigid terms across modal operators. Currently, only the subclass

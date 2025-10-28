@@ -3,14 +3,15 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.op;
 
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.AbstractOperator;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableSet;
+
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import org.jspecify.annotations.NonNull;
 
 
 /// This singleton class implements a general conditional operator

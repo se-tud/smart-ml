@@ -3,22 +3,19 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic;
 
-import de.tu_darmstadt.smartml.logic.op.*;
-import de.tu_darmstadt.smartml.services.Services;
-import org.key_project.logic.Name;
+import java.util.Iterator;
+
 import org.key_project.logic.Term;
 import org.key_project.logic.TermCreationException;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.UpdateableOperator;
-import org.key_project.logic.sort.Sort;
-
 import org.key_project.util.collection.ImmutableArray;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-import java.util.Iterator;
-import java.util.Objects;
+import de.tu_darmstadt.smartml.logic.op.*;
+import de.tu_darmstadt.smartml.services.Services;
 
 public class TermBuilder {
     private final TermFactory tf;
@@ -57,35 +54,35 @@ public class TermBuilder {
     }
 
     /*
-    public Term var(Metavariable mv) {
-        return tf.createTerm(mv);
-    }
-
-    public Term var(OperatorSV v) {
-        return tf.createTerm(v);
-    }
-
-
-    public Term var(ProgramVariable v) {
-        return tf.createTerm(v);
-    }
-
-    public ImmutableList<Term> var(ProgramVariable... vs) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
-        for (ProgramVariable v : vs) {
-            result = result.append(var(v));
-        }
-        return result;
-    }
-
-    public ImmutableList<Term> var(Iterable<? extends ProgramVariable> vs) {
-        ImmutableList<Term> result = ImmutableSLList.nil();
-        for (ProgramVariable v : vs) {
-            result = result.append(var(v));
-        }
-        return result;
-    }
-*/
+     * public Term var(Metavariable mv) {
+     * return tf.createTerm(mv);
+     * }
+     *
+     * public Term var(OperatorSV v) {
+     * return tf.createTerm(v);
+     * }
+     *
+     *
+     * public Term var(ProgramVariable v) {
+     * return tf.createTerm(v);
+     * }
+     *
+     * public ImmutableList<Term> var(ProgramVariable... vs) {
+     * ImmutableList<Term> result = ImmutableSLList.nil();
+     * for (ProgramVariable v : vs) {
+     * result = result.append(var(v));
+     * }
+     * return result;
+     * }
+     *
+     * public ImmutableList<Term> var(Iterable<? extends ProgramVariable> vs) {
+     * ImmutableList<Term> result = ImmutableSLList.nil();
+     * for (ProgramVariable v : vs) {
+     * result = result.append(var(v));
+     * }
+     * return result;
+     * }
+     */
     public Term tt() {
         return tt;
     }
@@ -401,117 +398,118 @@ public class TermBuilder {
     // -------------------------------------------------------------------------
 
     /*
-    public Term TRUE() {
-        return services.getLDTs().getBoolLDT().getTrueTerm();
-    }
-
-    public Term FALSE() {
-        return services.getLDTs().getBoolLDT().getFalseTerm();
-    }*/
+     * public Term TRUE() {
+     * return services.getLDTs().getBoolLDT().getTrueTerm();
+     * }
+     *
+     * public Term FALSE() {
+     * return services.getLDTs().getBoolLDT().getFalseTerm();
+     * }
+     */
 
     // -------------------------------------------------------------------------
     // integer operators
     // -------------------------------------------------------------------------
-/*
-    public Term geq(Term t1, Term t2) {
-        final IntLDT integerLDT = services.getLDTs().getIntLDT();
-        return func(integerLDT.getGreaterOrEquals(), t1, t2);
-    }
-
-    public Term gt(Term t1, Term t2) {
-        final IntLDT integerLDT = services.getLDTs().getIntLDT();
-        return func(integerLDT.getGreaterThan(), t1, t2);
-    }
-
-    public Term lt(Term t1, Term t2) {
-        final IntLDT integerLDT = services.getLDTs().getIntLDT();
-        return func(integerLDT.getLessThan(), t1, t2);
-    }
-
-    public Term leq(Term t1, Term t2) {
-        final IntLDT integerLDT = services.getLDTs().getIntLDT();
-        return func(integerLDT.getLessOrEquals(), t1, t2);
-    }
-
-    public Term zero() {
-        return services.getLDTs().getIntLDT().zero();
-    }
-
-    public Term one() {
-        return services.getLDTs().getIntLDT().one();
-    }
-
-    /// Creates terms to be used in Z/C/FP/DFP/R notations. The result does not have such a
-    /// constructor applied yet.
-    ///
-    /// @param numberString a string containing the number in a decimal representation
-    /// @return Term in "number" notation representing the given number
-    /// @throws NumberFormatException if <code>numberString</code> is not a number
-    private Term numberTerm(String numberString) {
-        if (numberString == null || numberString.isEmpty()) {
-            throw new NumberFormatException(numberString + " is not a number.");
-        }
-
-        Term numberLiteralTerm;
-        boolean negate = false;
-        int j = 0;
-
-        final IntLDT intLDT = services.getLDTs().getIntLDT();
-
-        if (numberString.charAt(0) == '-') {
-            negate = true;
-            j = 1;
-        }
-        numberLiteralTerm = func(intLDT.getNumberTerminator());
-
-        int digit;
-        for (int i = j, sz = numberString.length(); i < sz; i++) {
-            char c = numberString.charAt(i);
-            if ('0' <= c && c <= '9') {
-                digit = c - '0';
-            } else {
-                throw new NumberFormatException(numberString + " is not a number.");
-            }
-            numberLiteralTerm = func(intLDT.getNumberLiteralFor(digit), numberLiteralTerm);
-        }
-        if (negate) {
-            numberLiteralTerm = func(intLDT.getNegativeNumberSign(), numberLiteralTerm);
-        }
-
-        // return the raw number literal term ('C', 'Z' or 'R' must still be added)
-        return numberLiteralTerm;
-    }
-
-    /// Get term for an integer literal.
-    ///
-    /// @param numberString String representing an integer with radix 10, may be negative
-    /// @return Term in Z-Notation representing the given number
-    /// @throws NumberFormatException if <code>numberString</code> is not a number
-    public Term zTerm(String numberString) {
-        return func(services.getLDTs().getIntLDT().getNumberSymbol(),
-            numberTerm(numberString));
-    }
-
-    /// Get term for an integer literal.
-    ///
-    /// @param number an integer
-    /// @return Term in Z-Notation representing the given number
-    public Term zTerm(long number) {
-        return zTerm(Long.toString(number));
-    }
-
-    public Term add(Term t1, Term t2) {
-        final IntLDT integerLDT = services.getLDTs().getIntLDT();
-        final Term zero = integerLDT.zero();
-        if (t1.equals(zero)) {
-            return t2;
-        } else if (t2.equals(zero)) {
-            return t1;
-        } else {
-            return func(integerLDT.getAdd(), t1, t2);
-        }
-    }
-*/
+    /*
+     * public Term geq(Term t1, Term t2) {
+     * final IntLDT integerLDT = services.getLDTs().getIntLDT();
+     * return func(integerLDT.getGreaterOrEquals(), t1, t2);
+     * }
+     *
+     * public Term gt(Term t1, Term t2) {
+     * final IntLDT integerLDT = services.getLDTs().getIntLDT();
+     * return func(integerLDT.getGreaterThan(), t1, t2);
+     * }
+     *
+     * public Term lt(Term t1, Term t2) {
+     * final IntLDT integerLDT = services.getLDTs().getIntLDT();
+     * return func(integerLDT.getLessThan(), t1, t2);
+     * }
+     *
+     * public Term leq(Term t1, Term t2) {
+     * final IntLDT integerLDT = services.getLDTs().getIntLDT();
+     * return func(integerLDT.getLessOrEquals(), t1, t2);
+     * }
+     *
+     * public Term zero() {
+     * return services.getLDTs().getIntLDT().zero();
+     * }
+     *
+     * public Term one() {
+     * return services.getLDTs().getIntLDT().one();
+     * }
+     *
+     * /// Creates terms to be used in Z/C/FP/DFP/R notations. The result does not have such a
+     * /// constructor applied yet.
+     * ///
+     * /// @param numberString a string containing the number in a decimal representation
+     * /// @return Term in "number" notation representing the given number
+     * /// @throws NumberFormatException if <code>numberString</code> is not a number
+     * private Term numberTerm(String numberString) {
+     * if (numberString == null || numberString.isEmpty()) {
+     * throw new NumberFormatException(numberString + " is not a number.");
+     * }
+     *
+     * Term numberLiteralTerm;
+     * boolean negate = false;
+     * int j = 0;
+     *
+     * final IntLDT intLDT = services.getLDTs().getIntLDT();
+     *
+     * if (numberString.charAt(0) == '-') {
+     * negate = true;
+     * j = 1;
+     * }
+     * numberLiteralTerm = func(intLDT.getNumberTerminator());
+     *
+     * int digit;
+     * for (int i = j, sz = numberString.length(); i < sz; i++) {
+     * char c = numberString.charAt(i);
+     * if ('0' <= c && c <= '9') {
+     * digit = c - '0';
+     * } else {
+     * throw new NumberFormatException(numberString + " is not a number.");
+     * }
+     * numberLiteralTerm = func(intLDT.getNumberLiteralFor(digit), numberLiteralTerm);
+     * }
+     * if (negate) {
+     * numberLiteralTerm = func(intLDT.getNegativeNumberSign(), numberLiteralTerm);
+     * }
+     *
+     * // return the raw number literal term ('C', 'Z' or 'R' must still be added)
+     * return numberLiteralTerm;
+     * }
+     *
+     * /// Get term for an integer literal.
+     * ///
+     * /// @param numberString String representing an integer with radix 10, may be negative
+     * /// @return Term in Z-Notation representing the given number
+     * /// @throws NumberFormatException if <code>numberString</code> is not a number
+     * public Term zTerm(String numberString) {
+     * return func(services.getLDTs().getIntLDT().getNumberSymbol(),
+     * numberTerm(numberString));
+     * }
+     *
+     * /// Get term for an integer literal.
+     * ///
+     * /// @param number an integer
+     * /// @return Term in Z-Notation representing the given number
+     * public Term zTerm(long number) {
+     * return zTerm(Long.toString(number));
+     * }
+     *
+     * public Term add(Term t1, Term t2) {
+     * final IntLDT integerLDT = services.getLDTs().getIntLDT();
+     * final Term zero = integerLDT.zero();
+     * if (t1.equals(zero)) {
+     * return t2;
+     * } else if (t2.equals(zero)) {
+     * return t1;
+     * } else {
+     * return func(integerLDT.getAdd(), t1, t2);
+     * }
+     * }
+     */
     public Term applyUpdatePairsSequential(ImmutableList<Term> updates, Term target) {
         if (updates.isEmpty()) {
             return target;
@@ -532,152 +530,159 @@ public class TermBuilder {
     }
 
     /*
-    /// Creates a program variable for the result. Take care to register it in the namespaces.
-    public ProgramVariable resultVar(ProgramFunction fn, boolean makeNameUnique) {
-        return resultVar("result", fn, makeNameUnique);
-    }
-
-    /// Creates a program variable for the result with passed name. Take care to register it in the
-    /// namespaces.
-    public ProgramVariable resultVar(String name, ProgramFunction fn, boolean makeNameUnique) {
-        name += "_" + fn.name();
-        return progVar(name,
-            services.getRustInfo().getKeYRustyType(fn.getFunction().returnType().type()),
-            makeNameUnique);
-    }
-
-    /// Creates a program variable for example for prestate variables. Take care to register it in
-    /// the namespaces.
-    ///
-    /// @param baseName the base name to use
-    /// @param krt the type of the variable
-    /// @param makeNameUnique whether to change the base name to be unique
-    /// @return a program variable for the given name and type
-    public ProgramVariable progVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
-        if (makeNameUnique) {
-            baseName = newName(baseName);
-        }
-        return new ProgramVariable(new Name(baseName), krt);
-    }
-
-    /// Returns an available name constructed by affixing a counter to the passed base name.
-    ///
-    /// This method looks up the global [NamespaceSet] to check whether the [Name]s is
-    /// free. This can be problematic, since [Namespace]s are now local to goals. Use
-    /// [#newName(String,NamespaceSet)] to make sure that you have all the [Name]s you
-    /// need available.
-    ///
-    /// @param baseName The base name (prefix) for the name to generate.
-    /// @return An available name constructed by affixing a counter to the passed base name, or some
-    /// available free name (please consult comment above).
-    /// @see #newName(String, NamespaceSet)
-    public String newName(String baseName) {
-        return newName(baseName, services.getNamespaces());
-    }
-
-    /// Returns an available name constructed by affixing a counter to the passed base name.
-    ///
-    ///
-    /// Warning (DS): This method ignores the baseName if there are free name proposals. This can,
-    /// for instance, cause troubles in loading proofs containing rule apps with more than one
-    /// introduced (and saved) new name. In this case, the order of new names in the saved proof
-    /// file
-    /// matters (the first unused name is returned, regardless of the baseName).
-    ///
-    /// @param baseName The base name (prefix) for the name to generate.
-    /// @param localNamespace The local [NamespaceSet] to check.
-    /// @return An available name constructed by affixing a counter to the passed base name, or some
-    /// available free name (please consult comment above).
-    public String newName(String baseName, NamespaceSet localNamespace) {
-        final Name savedName = services.getNameRecorder().getProposal();
-        if (savedName != null) {
-            // CS: bugfix -- saving name proposals.
-            // getProposal() removes the name proposal form the name recorder,
-            // but we need to have it again for saving. Therefore, I appended
-            // the proposal at the end of the list again.
-            services.getNameRecorder().addProposal(savedName);
-
-            return savedName.toString();
-        }
-
-        int i = 0;
-        String result = baseName;
-        while (localNamespace.lookup(new Name(result)) != null) {
-            result = baseName + "_" + i++;
-        }
-
-        services.getNameRecorder().addProposal(new Name(result));
-
-        return result;
-    }
-
-    public Term reachableValue(Term t, KeYRustyType krt) {
-        Sort krtSort = krt.getSort();
-        assert krtSort != null;
-        assert t.sort().extendsTrans(krtSort) || t.sort() instanceof ProgramSVSort;
-        final Sort s = t.sort() instanceof ProgramSVSort ? krtSort : t.sort();
-        final var intLDT = services.getLDTs().getIntLDT();
-        if (s.extendsTrans(intLDT.targetSort())) {
-            return func(intLDT.getInBounds(Objects.requireNonNull(krt.getRustyType())), t);
-        } else {
-            return tt();
-        }
-    }
-
-    public Term reachableValue(ProgramVariable pv) {
-        return reachableValue(var(pv), pv.getKeYRustyType());
-    }
-
-    /// Creates program variables for the parameters. Take care to register them in the namespaces!
-    public ImmutableList<ProgramVariable> paramVars(ProgramFunction fn, boolean makeNamesUnique) {
-        ImmutableList<ProgramVariable> result = ImmutableSLList.nil();
-        for (int i = fn.getNumParams() - 1; i >= 0; i--) {
-            final KeYRustyType paramTy = fn.getParamType(i);
-            var pat = ((FunctionParamPattern) fn.getFunction().getParam(i)).pattern();
-            String name = "unknown";
-            if (pat instanceof BindingPattern bp) {
-                name = bp.pv().name().toString();
-            }
-            final var pv = progVar(name, paramTy, makeNamesUnique);
-            result = result.prepend(pv);
-        }
-        return result;
-    }
-
-    public Term measuredBy(Term mby) {
-        final var funcNS = services.getNamespaces().functions();
-        final var f = funcNS.lookup(new Name("measuredBy"));
-        if (f == null) {
-            throw new RuntimeException("LDT: Function measuredBy not found.\n"
-                + "It seems that there are definitions missing from the .key files.");
-        }
-        return func(f, mby);
-    }
-
-    public Function getMeasuredByEmpty() {
-        final var funcNS = services.getNamespaces().functions();
-        final var f = funcNS.lookup(new Name("measuredByEmpty"));
-        if (f == null) {
-            throw new RuntimeException("LDT: Function measuredByEmpty not found.\n"
-                + "It seems that there are definitions missing from the .key files.");
-        }
-        return f;
-    }
-
-    public Term measuredByEmpty() {
-        return func(getMeasuredByEmpty());
-    }
-
-    /// Creates a program variable for prestate variables. Take care to register it in the
-    /// namespaces.
-    ///
-    /// @param baseName the base name to use
-    /// @param krt the sort of the variable
-    /// @param makeNameUnique whether to change the base name to be unique
-    /// @return a location variable for the given name and type
-    public ProgramVariable atPreVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
-        return progVar(baseName + "_at_pre", krt, makeNameUnique);
-    }
-*/
+     * /// Creates a program variable for the result. Take care to register it in the namespaces.
+     * public ProgramVariable resultVar(ProgramFunction fn, boolean makeNameUnique) {
+     * return resultVar("result", fn, makeNameUnique);
+     * }
+     *
+     * /// Creates a program variable for the result with passed name. Take care to register it in
+     * the
+     * /// namespaces.
+     * public ProgramVariable resultVar(String name, ProgramFunction fn, boolean makeNameUnique) {
+     * name += "_" + fn.name();
+     * return progVar(name,
+     * services.getRustInfo().getKeYRustyType(fn.getFunction().returnType().type()),
+     * makeNameUnique);
+     * }
+     *
+     * /// Creates a program variable for example for prestate variables. Take care to register it
+     * in
+     * /// the namespaces.
+     * ///
+     * /// @param baseName the base name to use
+     * /// @param krt the type of the variable
+     * /// @param makeNameUnique whether to change the base name to be unique
+     * /// @return a program variable for the given name and type
+     * public ProgramVariable progVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
+     * if (makeNameUnique) {
+     * baseName = newName(baseName);
+     * }
+     * return new ProgramVariable(new Name(baseName), krt);
+     * }
+     *
+     * /// Returns an available name constructed by affixing a counter to the passed base name.
+     * ///
+     * /// This method looks up the global [NamespaceSet] to check whether the [Name]s is
+     * /// free. This can be problematic, since [Namespace]s are now local to goals. Use
+     * /// [#newName(String,NamespaceSet)] to make sure that you have all the [Name]s you
+     * /// need available.
+     * ///
+     * /// @param baseName The base name (prefix) for the name to generate.
+     * /// @return An available name constructed by affixing a counter to the passed base name, or
+     * some
+     * /// available free name (please consult comment above).
+     * /// @see #newName(String, NamespaceSet)
+     * public String newName(String baseName) {
+     * return newName(baseName, services.getNamespaces());
+     * }
+     *
+     * /// Returns an available name constructed by affixing a counter to the passed base name.
+     * ///
+     * ///
+     * /// Warning (DS): This method ignores the baseName if there are free name proposals. This
+     * can,
+     * /// for instance, cause troubles in loading proofs containing rule apps with more than one
+     * /// introduced (and saved) new name. In this case, the order of new names in the saved proof
+     * /// file
+     * /// matters (the first unused name is returned, regardless of the baseName).
+     * ///
+     * /// @param baseName The base name (prefix) for the name to generate.
+     * /// @param localNamespace The local [NamespaceSet] to check.
+     * /// @return An available name constructed by affixing a counter to the passed base name, or
+     * some
+     * /// available free name (please consult comment above).
+     * public String newName(String baseName, NamespaceSet localNamespace) {
+     * final Name savedName = services.getNameRecorder().getProposal();
+     * if (savedName != null) {
+     * // CS: bugfix -- saving name proposals.
+     * // getProposal() removes the name proposal form the name recorder,
+     * // but we need to have it again for saving. Therefore, I appended
+     * // the proposal at the end of the list again.
+     * services.getNameRecorder().addProposal(savedName);
+     *
+     * return savedName.toString();
+     * }
+     *
+     * int i = 0;
+     * String result = baseName;
+     * while (localNamespace.lookup(new Name(result)) != null) {
+     * result = baseName + "_" + i++;
+     * }
+     *
+     * services.getNameRecorder().addProposal(new Name(result));
+     *
+     * return result;
+     * }
+     *
+     * public Term reachableValue(Term t, KeYRustyType krt) {
+     * Sort krtSort = krt.getSort();
+     * assert krtSort != null;
+     * assert t.sort().extendsTrans(krtSort) || t.sort() instanceof ProgramSVSort;
+     * final Sort s = t.sort() instanceof ProgramSVSort ? krtSort : t.sort();
+     * final var intLDT = services.getLDTs().getIntLDT();
+     * if (s.extendsTrans(intLDT.targetSort())) {
+     * return func(intLDT.getInBounds(Objects.requireNonNull(krt.getRustyType())), t);
+     * } else {
+     * return tt();
+     * }
+     * }
+     *
+     * public Term reachableValue(ProgramVariable pv) {
+     * return reachableValue(var(pv), pv.getKeYRustyType());
+     * }
+     *
+     * /// Creates program variables for the parameters. Take care to register them in the
+     * namespaces!
+     * public ImmutableList<ProgramVariable> paramVars(ProgramFunction fn, boolean makeNamesUnique)
+     * {
+     * ImmutableList<ProgramVariable> result = ImmutableSLList.nil();
+     * for (int i = fn.getNumParams() - 1; i >= 0; i--) {
+     * final KeYRustyType paramTy = fn.getParamType(i);
+     * var pat = ((FunctionParamPattern) fn.getFunction().getParam(i)).pattern();
+     * String name = "unknown";
+     * if (pat instanceof BindingPattern bp) {
+     * name = bp.pv().name().toString();
+     * }
+     * final var pv = progVar(name, paramTy, makeNamesUnique);
+     * result = result.prepend(pv);
+     * }
+     * return result;
+     * }
+     *
+     * public Term measuredBy(Term mby) {
+     * final var funcNS = services.getNamespaces().functions();
+     * final var f = funcNS.lookup(new Name("measuredBy"));
+     * if (f == null) {
+     * throw new RuntimeException("LDT: Function measuredBy not found.\n"
+     * + "It seems that there are definitions missing from the .key files.");
+     * }
+     * return func(f, mby);
+     * }
+     *
+     * public Function getMeasuredByEmpty() {
+     * final var funcNS = services.getNamespaces().functions();
+     * final var f = funcNS.lookup(new Name("measuredByEmpty"));
+     * if (f == null) {
+     * throw new RuntimeException("LDT: Function measuredByEmpty not found.\n"
+     * + "It seems that there are definitions missing from the .key files.");
+     * }
+     * return f;
+     * }
+     *
+     * public Term measuredByEmpty() {
+     * return func(getMeasuredByEmpty());
+     * }
+     *
+     * /// Creates a program variable for prestate variables. Take care to register it in the
+     * /// namespaces.
+     * ///
+     * /// @param baseName the base name to use
+     * /// @param krt the sort of the variable
+     * /// @param makeNameUnique whether to change the base name to be unique
+     * /// @return a location variable for the given name and type
+     * public ProgramVariable atPreVar(String baseName, KeYRustyType krt, boolean makeNameUnique) {
+     * return progVar(baseName + "_at_pre", krt, makeNameUnique);
+     * }
+     */
 
 }

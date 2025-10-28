@@ -4,14 +4,10 @@
 package de.tu_darmstadt.smartml;
 
 import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 import de.tu_darmstadt.smartml.parser.SmartMLLexer;
 import de.tu_darmstadt.smartml.parser.SmartMLParser;
-
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -30,9 +26,9 @@ public class Test {
 
             ParseTree tree = parser.program();
 
-                System.out.println(" Parsed successfully: " + filename);
-                // optional: print the tree
-                System.out.println(tree.toStringTree(parser));
+            System.out.println(" Parsed successfully: " + filename);
+            // optional: print the tree
+            System.out.println(tree.toStringTree(parser));
 
         } catch (IOException e) {
             throw new RuntimeException(e);

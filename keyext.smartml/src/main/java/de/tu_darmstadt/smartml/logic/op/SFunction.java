@@ -3,17 +3,18 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.op;
 
-import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import org.jspecify.annotations.Nullable;
 import org.key_project.logic.Name;
 import org.key_project.logic.op.Function;
 import org.key_project.logic.sort.Sort;
 import org.key_project.util.collection.ImmutableArray;
 
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import org.jspecify.annotations.Nullable;
+
 public class SFunction extends Function {
     SFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
-              @Nullable ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
-              boolean isSkolemConstant) {
+            @Nullable ImmutableArray<Boolean> whereToBind, boolean unique, boolean isRigid,
+            boolean isSkolemConstant) {
         super(name, argSorts, sort, whereToBind, isRigid, unique, isSkolemConstant);
 
         assert sort != SmartMLDLTheory.UPDATE;
@@ -21,25 +22,25 @@ public class SFunction extends Function {
     }
 
     public SFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
-                     @Nullable ImmutableArray<Boolean> whereToBind, boolean unique) {
+            @Nullable ImmutableArray<Boolean> whereToBind, boolean unique) {
         this(name, sort, argSorts, whereToBind, unique, true, false);
     }
 
     public SFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts,
-                     @Nullable ImmutableArray<Boolean> whereToBind, boolean unique,
-                     boolean isSkolemConstant) {
+            @Nullable ImmutableArray<Boolean> whereToBind, boolean unique,
+            boolean isSkolemConstant) {
         this(name, sort, argSorts, whereToBind, unique, true, isSkolemConstant);
     }
 
     public SFunction(Name name, Sort sort, Sort[] argSorts, Boolean @Nullable [] whereToBind,
-                     boolean unique) {
+            boolean unique) {
         this(name, sort, new ImmutableArray<>(argSorts),
             whereToBind == null ? null : new ImmutableArray<>(whereToBind), unique);
     }
 
     public SFunction(Name name, Sort sort, Sort[] argSorts, Boolean @Nullable [] whereToBind,
-                     boolean unique,
-                     boolean isSkolemConstant) {
+            boolean unique,
+            boolean isSkolemConstant) {
         this(name, sort, new ImmutableArray<>(argSorts),
             whereToBind == null ? null : new ImmutableArray<>(whereToBind), unique,
             isSkolemConstant);

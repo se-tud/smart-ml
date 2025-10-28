@@ -1,14 +1,18 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.visitor;
 
 import java.util.*;
 
-import de.tu_darmstadt.smartml.services.Services;
-import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
-import de.tu_darmstadt.smartml.program.Program;
-import de.tu_darmstadt.smartml.program.expr.*;
-import de.tu_darmstadt.smartml.program.stmt.*;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
+
+import de.tu_darmstadt.smartml.program.Program;
+import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.program.expr.*;
+import de.tu_darmstadt.smartml.program.stmt.*;
+import de.tu_darmstadt.smartml.services.Services;
 
 public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
     protected static final Boolean CHANGED = Boolean.TRUE;
@@ -16,7 +20,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
 
     boolean preservesPositionInfo = true;
 
-    protected CreatingASTVisitor(SmartMLProgramElement root, boolean preservesPos, Services services) {
+    protected CreatingASTVisitor(SmartMLProgramElement root, boolean preservesPos,
+            Services services) {
         super(root, services);
         this.preservesPositionInfo = preservesPos;
     }
@@ -39,11 +44,13 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
 
     protected void changed() {
         ExtList list = getTop();
-        if (list.isEmpty() || list.getFirst() != CHANGED) list.addFirst(CHANGED);
+        if (list.isEmpty() || list.getFirst() != CHANGED)
+            list.addFirst(CHANGED);
     }
 
     protected void addToTopOfStack(SmartMLProgramElement x) {
-        if (x != null) getTop().add(x);
+        if (x != null)
+            getTop().add(x);
     }
 
     protected void addChild(SmartMLProgramElement x) {
@@ -53,7 +60,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
 
     protected void addChildren(ImmutableArray<? extends SmartMLProgramElement> arr) {
         stack.pop();
-        for (int i = 0, sz = arr.size(); i < sz; i++) addToTopOfStack(arr.get(i));
+        for (int i = 0, sz = arr.size(); i < sz; i++)
+            addToTopOfStack(arr.get(i));
     }
 
     /* ===================== Top-level ===================== */
@@ -97,7 +105,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
     @Override
     public void performActionOnAssign(Assign x) {
         DefaultAction def = new DefaultAction(x) {
-            @Override SmartMLProgramElement createNewElement(ExtList changeList) {
+            @Override
+            SmartMLProgramElement createNewElement(ExtList changeList) {
                 Expr rhs = changeList.get(Expr.class);
                 return new Assign(x.name(), rhs);
             }
@@ -108,7 +117,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
     @Override
     public void performActionOnIf(If x) {
         DefaultAction def = new DefaultAction(x) {
-            @Override SmartMLProgramElement createNewElement(ExtList changeList) {
+            @Override
+            SmartMLProgramElement createNewElement(ExtList changeList) {
                 Expr cond = changeList.get(Expr.class);
                 Stmt thenB = changeList.get(Stmt.class);
                 Stmt elseB = changeList.get(Stmt.class);
@@ -121,7 +131,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
     @Override
     public void performActionOnWhile(While x) {
         DefaultAction def = new DefaultAction(x) {
-            @Override SmartMLProgramElement createNewElement(ExtList changeList) {
+            @Override
+            SmartMLProgramElement createNewElement(ExtList changeList) {
                 Expr cond = changeList.get(Expr.class);
                 Stmt body = changeList.get(Stmt.class);
                 return new While(cond, body);
@@ -137,14 +148,20 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
 
     /* ===================== Expressions ===================== */
 
-    @Override public void performActionOnVar(Var x) { doDefaultAction(x); }
-    @Override public void performActionOnIntLit(IntLit x) { doDefaultAction(x); }
-    @Override public void performActionOnBoolLit(BoolLit x) { doDefaultAction(x); }
+    @Override
+    public void performActionOnVar(Var x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnIntLit(IntLit x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnBoolLit(BoolLit x) { doDefaultAction(x); }
 
     @Override
     public void performActionOnUnaryNot(UnaryNot x) {
         DefaultAction def = new DefaultAction(x) {
-            @Override SmartMLProgramElement createNewElement(ExtList changeList) {
+            @Override
+            SmartMLProgramElement createNewElement(ExtList changeList) {
                 return new UnaryNot(changeList.get(Expr.class));
             }
         };
@@ -154,7 +171,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
     @Override
     public void performActionOnBinary(Binary x) {
         DefaultAction def = new DefaultAction(x) {
-            @Override SmartMLProgramElement createNewElement(ExtList changeList) {
+            @Override
+            SmartMLProgramElement createNewElement(ExtList changeList) {
                 Expr l = changeList.get(Expr.class);
                 Expr r = changeList.get(Expr.class);
                 return new Binary(l, x.op(), r);
@@ -167,6 +185,7 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
 
     protected abstract class DefaultAction {
         protected final SmartMLProgramElement pe;
+
         protected DefaultAction(SmartMLProgramElement pe) { this.pe = pe; }
 
         abstract SmartMLProgramElement createNewElement(ExtList changeList);

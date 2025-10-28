@@ -1,6 +1,8 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program;
 
-import de.tu_darmstadt.smartml.program.visitor.Visitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,7 +27,9 @@ public abstract class AbstractSmartMLElement implements SmartMLProgramElement {
     public int getChildCount() {
         return children.size();
     }
+
     public List<SmartMLProgramElement> children() { return children; }
+
     public List<SmartMLProgramElement> getChildren() {
         return Collections.unmodifiableList(children);
     }
