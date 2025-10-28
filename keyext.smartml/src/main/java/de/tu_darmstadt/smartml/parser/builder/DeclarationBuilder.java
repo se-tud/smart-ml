@@ -182,17 +182,23 @@ public class DeclarationBuilder extends DefaultBuilder {
             assert declCtx != null : "One of the two must be present";
             List<GenericParameter> typeParams =
                 visitFormal_sort_param_decls(declCtx.formal_sort_param_decls());
-            ImmutableList<GenericParameter> params = ImmutableList.fromList(typeParams);
-            var doubled = CollectionUtil.findDuplicates(params);
-            if (!doubled.isEmpty()) {
-                semanticError(declCtx,
-                    "Type parameters must be unique within a declaration. Found duplicate: %s",
-                    doubled.getFirst());
+
+            if (typeParams == null) {
+                semanticError(declCtx.formal_sort_param_decls(),
+                    "No type parameters declaration found");
+            } else {
+                ImmutableList<GenericParameter> params = ImmutableList.fromList(typeParams);
+                var doubled = CollectionUtil.findDuplicates(params);
+                if (!doubled.isEmpty()) {
+                    semanticError(declCtx,
+                        "Type parameters must be unique within a declaration. Found duplicate: %s",
+                        doubled.getFirst());
+                }
+                String name = declCtx.simple_ident_dots().getText();
+                Name sortName = new Name(name);
+                var sortDecl = new ParametricSortDecl(sortName, isAbstractSort, params, doc);
+                namespaces().parametricSorts().add(sortDecl);
             }
-            String name = declCtx.simple_ident_dots().getText();
-            Name sortName = new Name(name);
-            var sortDecl = new ParametricSortDecl(sortName, isAbstractSort, params, doc);
-            namespaces().parametricSorts().add(sortDecl);
         }
         return createdSorts;
     }

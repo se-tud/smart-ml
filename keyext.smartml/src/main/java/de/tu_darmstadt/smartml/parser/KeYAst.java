@@ -96,7 +96,7 @@ public abstract class KeYAst<T extends ParserRuleContext> {
             final var cfg = new ConfigurationBuilder();
             List<Object> res = cfg.visitCfile(ctx);
             if (!res.isEmpty())
-                return (Configuration) res.get(0);
+                return (Configuration) res.getFirst();
             else
                 throw new RuntimeException();
         }

@@ -250,26 +250,32 @@ public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
         return services;
     }
 
-    public Namespace<SchemaVariable> schemaVariables() {
+    public Namespace<@NonNull SchemaVariable> schemaVariables() {
         return schemaVariablesNamespace;
     }
 
-    public void setSchemaVariables(Namespace<SchemaVariable> ns) {
+    public void setSchemaVariables(Namespace<@NonNull SchemaVariable> ns) {
         this.schemaVariablesNamespace = ns;
     }
 
     @Override
     public Object visitVarIds(KeYSmartMLDLParser.VarIdsContext ctx) {
         Collection<String> ids = accept(ctx.simple_ident_comma_list());
-        List<ParsableVariable> list = new ArrayList<>(ids.size());
-        for (String id : ids) {
-            ParsableVariable v = (ParsableVariable) lookup(new Name(id));
-            if (v == null) {
-                semanticError(ctx, "Variable " + id + " not declared.");
+        if (ids == null) {
+            semanticError(ctx, "Expected at least an empty var id collection");
+            // never reached as above throws an exception
+            return null;
+        } else {
+            List<ParsableVariable> list = new ArrayList<>(ids.size());
+            for (String id : ids) {
+                ParsableVariable v = (ParsableVariable) lookup(new Name(id));
+                if (v == null) {
+                    semanticError(ctx, "Variable " + id + " not declared.");
+                }
+                list.add(v);
             }
-            list.add(v);
+            return list;
         }
-        return list;
     }
 
     @Override

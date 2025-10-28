@@ -90,8 +90,8 @@ public class AbstractBuilder<T> extends KeYSmartMLDLParserBaseVisitor<T> {
     }
 
     // TODO ask about generics; should this be parameterized?
-    protected <S> S oneOf(ParserRuleContext... ctxs) {
-        for (ParserRuleContext ctx : ctxs) {
+    protected <S> S oneOf(ParserRuleContext... contexts) {
+        for (ParserRuleContext ctx : contexts) {
             if (ctx != null) {
                 return (S) ctx.accept(this);
             }
@@ -122,23 +122,23 @@ public class AbstractBuilder<T> extends KeYSmartMLDLParserBaseVisitor<T> {
         }
     }
 
-    protected <T2> List<T2> mapMapOf(List<? extends RuleContext>... ctxs) {
-        return Arrays.stream(ctxs).flatMap(it -> it.stream().map(a -> (T2) accept(a)))
+    protected <T2> List<T2> mapMapOf(List<? extends RuleContext>... contexts) {
+        return Arrays.stream(contexts).flatMap(it -> it.stream().map(a -> (T2) accept(a)))
                 .collect(Collectors.toList());
     }
 
     /// Throws a semanticError for the given ast node and message.
     ///
-    /// @param ctx
-    /// @param format
-    /// @param args
+    /// @param ctx the [ParserRuleContext] that caused an error
+    /// @param format the error message as formatted string
+    /// @param args additional arguments to explain the error
     protected void semanticError(ParserRuleContext ctx, String format, Object... args) {
         throw new BuildingException(ctx, String.format(format, args));
     }
 
     /// Wraps an exception into a [BuildingException]
     ///
-    /// @param e
+    /// @param e the [Throwable] with the actual cause of the failed building process
     protected void throwEx(Throwable e) {
         throw new BuildingException(e);
     }
