@@ -26,9 +26,8 @@ public class Test {
 
             ParseTree tree = parser.program();
 
-            System.out.println(" Parsed successfully: " + filename);
-            // optional: print the tree
-            System.out.println(tree.toStringTree(parser));
+                System.out.println(" Parsed successfully: " + filename);
+                System.out.println(tree.toStringTree(parser));
 
         } catch (IOException e) {
             throw new RuntimeException(e);

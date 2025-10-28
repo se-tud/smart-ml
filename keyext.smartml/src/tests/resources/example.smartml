@@ -1,99 +1,30 @@
-datatype AuctionMode {
+contract Notifier {
+    int truth;
+    address addressToNotify;
 
-	constructor { NeverStarted :: AuctionMode | Open :: AuctionMode | Closed :: AuctionMode}
-
-
-	bool isClosed(AuctionMode _mode) {
-		return _mode == Closed
-	}
-
-	bool isOpen(AuctionMode mode) {
-		return switch mode {
-			case Open: true ;
-			default: false ;
-		}
-	}
-}
-
-
-datatype List {
-
-
-	constructor { nil :: List | cons(int n, List l) :: List }
-
-
-	bool find(List list, int element) {
-		return switch list {
-			case nil: false ;
-			case cons(xs, e):
-				switch e {
-					case element: true ;
-					default: find(xs, e) ;
-				} ;
-			default : false;
-		}
-	}
-}
-
-exception MyException;
-
-interface Bidder{}
-interface Owner{}
-
-contract OneAuction {
-
-    AuctionMode mode;
-    Owner owner;
-    Bidder bidder;
-    int value;
-
-    constructor (Owner _owner) {
-        mode = AuctionMode.NeverStarted ;
-        owner = _owner ;
+    constructor(int lie, address _addressToNotify){
+        truth = lie;
+        addressToNotify = _addressToNotify;
     }
 
-    function openAuction() returns int {
-	    assert(mode == AuctionMode.NeverStarted);
-        // need to access caller?  -- assert(caller == owner);
-        mode = AuctionMode.Open;
-        value = value + 1;
-
-        //bidder = owner;
-        let int x = 4, int y = 3 in (x+y)
- 		if value == 0 : { value = 1;}
-       	   value<0 : { value = value+1; value=value+1;}
-       	   else : { value = 0;}
-       fi
-       try value=0;
-       catch (MyException e){value = 1;}
-       return value;
-
-    }
-    function closeAuction(Bidder _bidder) {
-       //assert(mode == AuctionMode.Open);
-       //assert (
-       //     _bidder == owner ||
-       //     _bidder == bidder
-       // );
-        mode = AuctionMode.Closed;
-        // Transfer the bid to the owner
-        int tmp = value;
-        int tmp = 3 ;
-        value = 0       ;
-    }
- function makeBid(int bid, Owner _bidder){
-        assert(mode == AuctionMode.Open);
-        assert(bid > value) ;// need to pass resources
-        // Remember the old bid
-        int oldBid = value;
-        Bidder oldBidder = bidder;
-        // Set the new bid
-        value = msg.value;
-        // bidder = _bidder;
-        // Transfer the old bid to the old bidder
-        value = bidder$10,5.closeAuction(oldBidder) ;
-
-
+    checkMessage() returns int {
+        while (truth > 42) {
+            truth = truth - 2;
+            if (truth == 42) {
+                return 0;
+            } else {
+                return 1;
+            }
+        }
     }
 
+    transact() returns bool {
+        try
+            sender.checkMessage();
+        abort {
+            return false;
+        } success {
+            return true;
+        }
+    }
 }
