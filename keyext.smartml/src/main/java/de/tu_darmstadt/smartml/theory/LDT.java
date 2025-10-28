@@ -62,6 +62,11 @@ public abstract class LDT implements Named {
         this.parametricSort = null;
     }
 
+    @Override
+    public final Name name() {
+        return name;
+    }
+
     // -------------------------------------------------------------------------
     // protected methods
     // -------------------------------------------------------------------------

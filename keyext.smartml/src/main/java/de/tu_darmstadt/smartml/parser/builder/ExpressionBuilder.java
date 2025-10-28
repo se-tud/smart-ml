@@ -53,7 +53,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     public record BoundVar(Name name, Sort sort) {
     }
 
-    private List<BoundVariable> boundVars = new ArrayList<>();
+    private final List<BoundVariable> boundVars = new ArrayList<>();
 
 
     public ExpressionBuilder(Services services, NamespaceSet nss) {
@@ -291,7 +291,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     @Override
     public @Nullable Object visitQuantifierterm(KeYSmartMLDLParser.QuantifiertermContext ctx) {
         Operator op = null;
-        Namespace<QuantifiableVariable> orig = variables();
+        Namespace<@NonNull QuantifiableVariable> orig = variables();
         if (ctx.FORALL() != null) {
             op = Quantifier.ALL;
         }
@@ -442,7 +442,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         String firstName = accept(ctx.simple_ident());
 
         ImmutableArray<QuantifiableVariable> boundVars = null;
-        Namespace<@NonNull QuantifiableVariable> origVars = null;
+        Namespace<@NonNull QuantifiableVariable> origVars;
         KeYSmartMLDLParser.Formal_sort_argsContext genericArgsCtxt = null;
         if (ctx.formal_sort_args() != null) {
             genericArgsCtxt = ctx.formal_sort_args();
@@ -721,10 +721,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     private Term binaryLDTSpecificTerm(ParserRuleContext ctx, String opname, Term last, Term cur) {
-        Sort sort = last.sort();
-        if (sort == null) {
-            semanticError(ctx, "No sort for %s", last);
-        }
+        final Sort sort = last.sort();
         LDT ldt = services.getLDTs().getLDTFor(sort);
         if (ldt == null) {
             // falling back to integer ldt (for instance for untyped schema variables)

@@ -21,11 +21,11 @@ public class SmartMLReader {
     }
 
     public SmartMLBlock readBlockWithProgramVariables(
-            Namespace<@NonNull ProgramVariable> programVariableNamespace, String solidity) {
+            Namespace<@NonNull ProgramVariable> programVariableNamespace, String smartML) {
         throw new RuntimeException("Not implemented yet");
     }
 
-    public SmartMLBlock readBlockWithEmptyContext(String solidity) {
+    public SmartMLBlock readBlockWithEmptyContext(String smartML) {
         throw new RuntimeException("Not implemented yet");
     }
 }

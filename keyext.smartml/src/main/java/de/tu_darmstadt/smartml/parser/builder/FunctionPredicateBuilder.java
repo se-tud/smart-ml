@@ -54,11 +54,11 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
             ImmutableList<GenericArgument> args = ImmutableList.of();
             for (int i = psd.getParameters().size() - 1; i >= 0; i--) {
                 var param = psd.getParameters().get(i);
-                if (param instanceof GenericSortParam(GenericSort gs)) {
+                if (param instanceof GenericSortParam(final GenericSort gs)) {
                     args = args.prepend(new SortArg(gs));
                     sorts.add(gs);
-                } else if (param instanceof ConstParam cp) {
-                    SFunction f = new SFunction(cp.name(), cp.sort());
+                } else if (param instanceof ConstParam(final Name cpName, final Sort cpSort)) {
+                    SFunction f = new SFunction(cpName, cpSort);
                     Term term = services.getTermBuilder().func(f);
                     args = args.prepend(new TermArg(term));
                     consts.add(f);
@@ -122,7 +122,7 @@ public class FunctionPredicateBuilder extends DefaultBuilder {
         String pred_name = accept(ctx.funcpred_name());
         List<Boolean> whereToBind = accept(ctx.where_to_bind());
         List<Sort> argSorts = accept(ctx.arg_sorts());
-        if (whereToBind != null && whereToBind.size() != argSorts.size()) {
+        if (whereToBind != null && (argSorts == null || whereToBind.size() != argSorts.size())) {
             semanticError(ctx, "Where-to-bind list must have same length as argument list");
         }
 

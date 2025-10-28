@@ -16,12 +16,13 @@ import de.tu_darmstadt.smartml.logic.SmartMLBlock;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.logic.op.SModality;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 import static de.tu_darmstadt.smartml.logic.equality.RenamingProgramElementProperty.RENAMING_PROGRAM_ELEMENT_PROPERTY;
 
 
-public class RenamingTermProperty implements Property<Term> {
+public class RenamingTermProperty implements Property<@NonNull Term> {
     /// The single instance of this property.
     public static final RenamingTermProperty RENAMING_TERM_PROPERTY = new RenamingTermProperty();
 
@@ -345,7 +346,7 @@ public class RenamingTermProperty implements Property<Term> {
     private int recursiveHelper(Term term, ImmutableList<QuantifiableVariable> nameAbstractionList,
             int hashCode) {
         for (int i = 0; i < term.arity(); i++) {
-            ImmutableList<QuantifiableVariable> subBoundVars = nameAbstractionList;
+            ImmutableList<@NonNull QuantifiableVariable> subBoundVars = nameAbstractionList;
 
             for (int j = 0; j < term.varsBoundHere(i).size(); j++) {
                 final QuantifiableVariable qVar = term.varsBoundHere(i).get(j);

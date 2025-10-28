@@ -127,25 +127,25 @@ public class RenamingProgramElementProperty implements Property<@NonNull SmartML
 
     /// Handles the special case of comparing a [] to a [SyntaxElement].
     ///
-    /// @param rnte the SmartML program element with children to be compared
-    /// @param se the [SyntaxElement] to be compared
-    /// @return `true` iff `se` is of the same class and has the same number of children
-    /// as `jnte`
-    private boolean handleSmartMLNonTerminalProgramElement(SyntaxElement rnte,
-            SyntaxElement se) {
+    /// @param firstSE the SmartML program element with children to be compared
+    /// @param secondSE the [SyntaxElement] to be compared
+    /// @return `true` iff `secondSE` is of the same class and has the same number of children
+    /// as `firstSE`
+    private boolean handleSmartMLNonTerminalProgramElement(SyntaxElement firstSE,
+            SyntaxElement secondSE) {
         /*
          * In the case of non-terminal SmartMLProgramElements, we must not traverse the children
          * recursively through the normal equals method. This is the case as we might have to
          * add some entries of children nodes to a NameAbstractionTable so that they can be
          * compared later on.
          */
-        if (se == rnte) {
+        if (secondSE == firstSE) {
             return true;
         }
-        if (se.getClass() != rnte.getClass()) {
+        if (secondSE.getClass() != firstSE.getClass()) {
             return false;
         }
-        return rnte.getChildCount() == se.getChildCount();
+        return firstSE.getChildCount() == secondSE.getChildCount();
     }
 
     /// Handles the special case of comparing a [ProgramVariable] or an

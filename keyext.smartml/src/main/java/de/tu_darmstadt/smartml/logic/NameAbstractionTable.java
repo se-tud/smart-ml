@@ -27,9 +27,9 @@ public class NameAbstractionTable {
             declarations1 = new LinkedList<>();
         }
 
-        declarations0.add(0, name1);
+        declarations0.addFirst(name1);
         assert declarations1 != null;
-        declarations1.add(0, name2);
+        declarations1.addFirst(name2);
     }
 
     /// tests if the given elements have been assigned to the same abstract name.
