@@ -46,7 +46,7 @@ public class SFunction extends Function {
             isSkolemConstant);
     }
 
-    SFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts, boolean isRigid) {
+    public SFunction(Name name, Sort sort, ImmutableArray<Sort> argSorts, boolean isRigid) {
         this(name, sort, argSorts, null, false, isRigid, false);
     }
 
@@ -69,4 +69,5 @@ public class SFunction extends Function {
     public SFunction(Name name, Sort sort, boolean isSkolemConstant) {
         this(name, sort, new ImmutableArray<>(), null, false, true, isSkolemConstant);
     }
+
 }

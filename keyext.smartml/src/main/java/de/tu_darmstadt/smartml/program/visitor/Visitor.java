@@ -32,4 +32,6 @@ public interface Visitor {
     void performActionOnBinary(Binary x);
 
     void performActionOnUnaryNot(UnaryNot x);
+
+    void performActionOnProgramVariable(Visitor v);
 }

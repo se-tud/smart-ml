@@ -1,0 +1,848 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package de.tu_darmstadt.smartml.parser.builder;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Supplier;
+
+import org.key_project.logic.Name;
+import org.key_project.logic.Namespace;
+import org.key_project.logic.Term;
+import org.key_project.logic.TermCreationException;
+import org.key_project.logic.op.AbstractSortedOperator;
+import org.key_project.logic.op.Function;
+import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.ParsableVariable;
+import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.logic.op.sv.OperatorSV;
+import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.logic.sort.Sort;
+import org.key_project.prover.sequent.Sequent;
+import org.key_project.prover.sequent.SequentFormula;
+import org.key_project.util.collection.ImmutableArray;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
+import org.key_project.util.java.StringUtil;
+
+import de.tu_darmstadt.smartml.logic.NamespaceSet;
+import de.tu_darmstadt.smartml.logic.SmartMLBlock;
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import de.tu_darmstadt.smartml.logic.TermFactory;
+import de.tu_darmstadt.smartml.logic.op.*;
+import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser;
+import de.tu_darmstadt.smartml.program.SchemaSmartMLReader;
+import de.tu_darmstadt.smartml.program.SmartMLReader;
+import de.tu_darmstadt.smartml.proof.calculus.SmartMLSequentKit;
+import de.tu_darmstadt.smartml.rule.inst.sv.VariableSV;
+import de.tu_darmstadt.smartml.services.Services;
+import de.tu_darmstadt.smartml.util.parsing.BuildingException;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+
+public class ExpressionBuilder extends DefaultBuilder {
+
+    private boolean smartmlSchemaModeActive;
+
+    public record BoundVar(Name name, Sort sort) {
+    }
+
+    private List<BoundVariable> boundVars = new ArrayList<>();
+
+
+    public ExpressionBuilder(Services services, NamespaceSet nss) {
+        super(services, nss);
+    }
+
+    private BoundVariable bindVar(String name, Sort sort) {
+        var e = new BoundVariable(new Name(name), sort);
+        boundVars.add(e);
+        return e;
+    }
+
+    private void bindVar() {
+        namespaces().setVariables(new Namespace<>(variables()));
+    }
+
+    private void unbindVars(List<@NonNull BoundVariable> vars) {
+        boundVars.removeAll(vars);
+    }
+
+    /**
+     * Given a raw modality string, this function trims the modality information.
+     *
+     * @param raw non-null string
+     * @return non-null string
+     */
+    public static String trimSmartMLBlock(String raw) {
+        if (raw.startsWith("\\<")) {
+            return StringUtil.trim(raw, "\\<>");
+        }
+        if (raw.startsWith("\\[")) {
+            return StringUtil.trim(raw, "\\[]");
+        }
+        int end = raw.length() - (raw.endsWith("\\endmodality") ? "\\endmodality".length() : 0);
+        int start = 0;
+        if (raw.startsWith("\\diamond")) {
+            start = "\\diamond".length();
+        } else if (raw.startsWith("\\box")) {
+            start = "\\box".length();
+        } else if (raw.startsWith("\\modality")) {
+            start = raw.indexOf('}') + 1;
+        }
+        return raw.substring(start, end);
+    }
+
+    /**
+     * Given a raw modality string, this method determines the operator name.
+     */
+    public static String operatorOfSmartMLBlock(String raw) {
+        if (raw.startsWith("\\<")) {
+            return "diamond";
+        }
+        if (raw.startsWith("\\[")) {
+            return "box";
+        }
+        if (raw.startsWith("\\diamond")) {
+            return "diamond";
+        }
+        if (raw.startsWith("\\box")) {
+            return "box";
+        }
+        if (raw.startsWith("\\modality")) {
+            int start = raw.indexOf('{') + 1;
+            int end = raw.indexOf('}');
+            return raw.substring(start, end);
+        }
+        return "n/a";
+    }
+
+    protected void enableSchemaMode() {
+        smartmlSchemaModeActive = true;
+    }
+
+    protected void disableSchemaMode() {
+        smartmlSchemaModeActive = false;
+    }
+
+
+
+    private static class PairOfStringAndSmartMLBlock {
+        String opName;
+        SmartMLBlock smartMLBlock;
+    }
+
+    private PairOfStringAndSmartMLBlock getSmartMLBlock(Token t) {
+        PairOfStringAndSmartMLBlock stringSMLB = new PairOfStringAndSmartMLBlock();
+        String s = t.getText().trim();
+        String cleanSmartML = trimSmartMLBlock(s);
+        stringSMLB.opName = operatorOfSmartMLBlock(s);
+
+        try {
+            try {
+                if (smartmlSchemaModeActive) {// TEST
+                    final SchemaSmartMLReader schemaSmartMLReader =
+                        new SchemaSmartMLReader(services, nss);
+                    schemaSmartMLReader.setSVNamespace(schemaVariables());
+                    try {
+                        stringSMLB.smartMLBlock =
+                            schemaSmartMLReader.readBlockWithProgramVariables(programVariables(),
+                                cleanSmartML);
+                    } catch (Exception e) {
+                        stringSMLB.smartMLBlock =
+                            schemaSmartMLReader.readBlockWithEmptyContext(cleanSmartML);
+                    }
+                }
+            } catch (Exception e) {
+                if (cleanSmartML.startsWith("{..")) {// do not fallback
+                    throw e;
+                }
+            }
+
+            if (stringSMLB.smartMLBlock == null) {
+                SmartMLReader smartMLReader = new SmartMLReader(services, nss);
+                try {
+                    stringSMLB.smartMLBlock = smartMLReader
+                            .readBlockWithProgramVariables(programVariables(), cleanSmartML);
+                } catch (Exception e1) {
+                    stringSMLB.smartMLBlock = smartMLReader.readBlockWithEmptyContext(cleanSmartML);
+                }
+            }
+        } catch (Exception e) {
+            throw new BuildingException(t, "Could not parse java: '" + cleanSmartML + "'", e);
+        }
+        return stringSMLB;
+    }
+
+    protected Term capsulateTf(ParserRuleContext ctx, Supplier<Term> termSupplier) {
+        try {
+            return termSupplier.get();
+        } catch (TermCreationException e) {
+            throw new BuildingException(ctx,
+                String.format("Could not build term on: %s", ctx.getText()), e);
+        }
+    }
+
+    @Override
+    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName,
+            KeYSmartMLDLParser.Formal_sort_argsContext genericArgsCtxt) {
+        // Might be quantified variable
+        var idx = -1;
+        for (int i = 0; i < boundVars.size(); ++i) {
+            if (varfuncName.equals(boundVars.get(i).name().toString())) {
+                idx = i;
+                break;
+            }
+        }
+        if (idx != -1) {
+            var deBruijn = boundVars.size() - idx;
+            return new LogicVariable(deBruijn, boundVars.get(idx).sort());
+        }
+
+        return super.lookupVarfuncId(ctx, varfuncName, genericArgsCtxt);
+    }
+
+
+    public TermFactory getTermFactory() {
+        return getServices().getTermFactory();
+    }
+
+    @Override
+    public @Nullable Object visitTermorseq(KeYSmartMLDLParser.TermorseqContext ctx) {
+        Term head = accept(ctx.head);
+        Sequent s = accept(ctx.s);
+        ImmutableList<SequentFormula> ss = accept(ctx.ss);
+        if (head != null && s == null && ss == null) {
+            return head;
+        }
+        if (head != null && ss != null) {
+            // A sequent with only head in the antecedent.
+            return SmartMLSequentKit
+                    .createSequent(ImmutableSLList.singleton(new SequentFormula(head)), ss);
+        }
+        if (head != null && s != null) {
+            // A sequent. Prepend head to the antecedent.
+            ImmutableList<SequentFormula> newAnt =
+                s.antecedent().insertFirst(new SequentFormula(head)).getFormulaList();
+            return SmartMLSequentKit.createSequent(newAnt, s.succedent().asList());
+        }
+        if (ss != null) {
+            return SmartMLSequentKit.createSequent(ImmutableSLList.nil(), ss);
+        }
+        assert (false);
+        return null;
+    }
+
+    @Override
+    public @Nullable Term visitTermEOF(KeYSmartMLDLParser.TermEOFContext ctx) {
+        return accept(ctx.term());
+    }
+
+    @Override
+    public @Nullable Object visitSemisequent(KeYSmartMLDLParser.SemisequentContext ctx) {
+        ImmutableList<SequentFormula> semiSeq = accept(ctx.ss);
+        if (semiSeq == null) {
+            semiSeq = ImmutableSLList.nil();
+        }
+        Term head = accept(ctx.term());
+        if (head != null) {
+            semiSeq = semiSeq.prepend(new SequentFormula(head));
+        }
+        return semiSeq;
+    }
+
+    @Override
+    public Sequent visitSeq(KeYSmartMLDLParser.SeqContext ctx) {
+        return SmartMLSequentKit.createSequent(accept(ctx.ant),
+            accept(ctx.suc));
+    }
+
+    @Override
+    public Sequent visitSeqEOF(KeYSmartMLDLParser.SeqEOFContext ctx) {
+        return accept(ctx.seq());
+    }
+
+    @Override
+    public Object visitTermParen(KeYSmartMLDLParser.TermParenContext ctx) {
+        Term base = accept(ctx.term());
+        if (ctx.attribute().isEmpty()) {
+            return base;
+        }
+        return null;// handleAttributes(base, ctx.attribute());
+    }
+
+    @Override
+    public @Nullable Object visitNegation_term(KeYSmartMLDLParser.Negation_termContext ctx) {
+        Term termL = accept(ctx.sub);
+        if (ctx.NOT() != null) {
+            return capsulateTf(ctx, () -> getTermFactory().createTerm(Junctor.NOT, termL));
+        } else {
+            return termL;
+        }
+    }
+
+
+    @Override
+    public @Nullable Object visitQuantifierterm(KeYSmartMLDLParser.QuantifiertermContext ctx) {
+        Operator op = null;
+        Namespace<QuantifiableVariable> orig = variables();
+        if (ctx.FORALL() != null) {
+            op = Quantifier.ALL;
+        }
+        if (ctx.EXISTS() != null) {
+            op = Quantifier.EX;
+        }
+        List<@NonNull BoundVariable> vars = accept(ctx.bound_variables());
+        assert vars != null;
+        var bound = new ImmutableArray<QuantifiableVariable>(vars);
+        Term a1 = accept(ctx.sub);
+        Term a = getTermFactory().createTerm(op, new ImmutableArray<>(a1),
+            bound);
+        unbindVars(orig);
+        unbindVars(vars);
+        return a;
+    }
+
+    @Override
+    public Object visitOne_bound_variable(
+            KeYSmartMLDLParser.One_bound_variableContext ctx) {
+        String id = accept(ctx.simple_ident());
+        Sort sort = accept(ctx.sortId());
+
+        assert id != null;
+        SchemaVariable ts = schemaVariables().lookup(new Name(id));
+        if (ts != null) {
+            if (!(ts instanceof VariableSV)) {
+                semanticError(ctx,
+                    ts + " is not allowed in a quantifier. Note, that you can't "
+                        + "use the normal syntax for quantifiers of the form \"\\exists int i;\""
+                        + " in taclets. You have to define the variable as a schema variable"
+                        + " and use the syntax \"\\exists i;\" instead.");
+            }
+            bindVar();
+            return ts;
+        }
+
+        if (sort != null) {
+            return bindVar(id, sort);
+        }
+
+        QuantifiableVariable result =
+            doLookup(new Name(ctx.id.getText()), variables());
+
+        if (result == null) {
+            semanticError(ctx, "There is no schema variable or variable named " + id);
+        }
+
+        return result;
+    }
+
+    @Override
+    public @Nullable Object visitModality_term(KeYSmartMLDLParser.Modality_termContext ctx) {
+        Term a1 = accept(ctx.sub);
+        if (ctx.MODALITY() == null) {
+            return a1;
+        }
+
+        PairOfStringAndSmartMLBlock strSMB = getSmartMLBlock(ctx.MODALITY().getSymbol());
+        Operator op;
+        if (strSMB.opName.charAt(0) == '#') {
+            /*
+             * if (!inSchemaMode()) { semanticError(ctx,
+             * "No schema elements allowed outside taclet declarations (" + strSMB.opName + ")"); }
+             */
+            var kind =
+                (SModality.SmartMLModalityKind) schemaVariables().lookup(new Name(strSMB.opName));
+            op = SModality.getModality(kind, strSMB.smartMLBlock);
+        } else {
+            var kind = SModality.SmartMLModalityKind.getKind(strSMB.opName);
+            op = SModality.getModality(kind, strSMB.smartMLBlock);
+        }
+        if (op == null) {
+            semanticError(ctx, "Unknown modal operator: " + strSMB.opName);
+        }
+
+        return capsulateTf(ctx,
+            () -> getTermFactory().createTerm(op, new Term[] { a1 }, null));
+    }
+
+    @Override
+    public @Nullable Object visitUpdate_term(KeYSmartMLDLParser.Update_termContext ctx) {
+        Term t = oneOf(ctx.atom_prefix(), ctx.unary_formula());
+        if (ctx.u.isEmpty()) {
+            return t;
+        }
+        Term u = accept(ctx.u);
+        return getTermFactory().createTerm(UpdateApplication.UPDATE_APPLICATION, u, t);
+    }
+
+    private Term termForParsedVariable(ParsableVariable v, ParserRuleContext ctx) {
+        if (v instanceof LogicVariable lv) {
+            return capsulateTf(ctx, () -> getTermFactory().createTerm(lv));
+        } else if (v instanceof ProgramVariable lv) {
+            return capsulateTf(ctx, () -> getTermFactory().createTerm(lv));
+        } else {
+            if (v instanceof OperatorSV sv) {
+                return capsulateTf(ctx, () -> getTermFactory().createTerm(sv));
+            } else {
+                String errorMessage = "";
+                errorMessage += v + " is not a logic or program variable";
+                semanticError(null, errorMessage);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Term> visitArgument_list(KeYSmartMLDLParser.Argument_listContext ctx) {
+        return mapOf(ctx.term());
+    }
+
+    private @Nullable Term[] visitArguments(
+            KeYSmartMLDLParser.@Nullable Argument_listContext call) {
+        List<Term> arguments = accept(call);
+        return arguments == null ? null : arguments.toArray(new Term[0]);
+    }
+
+    @Override
+    public Object visitBracket_term(KeYSmartMLDLParser.Bracket_termContext ctx) {
+        Term t = accept(ctx.primitive_labeled_term());
+        /*
+         * for (int i = 0; i < ctx.bracket_suffix_heap().size(); i++) {
+         * KeYRustyParser.Brace_suffixContext brace_suffix =
+         * ctx.bracket_suffix_heap(i).brace_suffix();
+         * ParserRuleContext heap = ctx.bracket_suffix_heap(i).heap;
+         * t = accept(brace_suffix, t);
+         * if (heap != null) {
+         * t = replaceHeap(t, accept(heap), heap);
+         * }
+         * }
+         */
+        if (ctx.attribute().isEmpty()) {
+            return t;
+        }
+        throw new RuntimeException("TODO");
+        // return handleAttributes(t, ctx.attribute());
+    }
+
+    @Override
+    public List<@NonNull BoundVar> visitBound_variables(
+            KeYSmartMLDLParser.Bound_variablesContext ctx) {
+        return mapOf(ctx.one_bound_variable());
+    }
+
+    @Override
+    public Term visitAccessterm(KeYSmartMLDLParser.AccesstermContext ctx) {
+        String firstName = accept(ctx.simple_ident());
+
+        ImmutableArray<QuantifiableVariable> boundVars = null;
+        Namespace<@NonNull QuantifiableVariable> origVars = null;
+        KeYSmartMLDLParser.Formal_sort_argsContext genericArgsCtxt = null;
+        if (ctx.formal_sort_args() != null) {
+            genericArgsCtxt = ctx.formal_sort_args();
+        }
+        Term[] args = null;
+        if (ctx.call() != null) {
+            origVars = variables();
+            List<QuantifiableVariable> bv = accept(ctx.call().boundVars);
+            boundVars =
+                bv != null ? new ImmutableArray<>(bv.toArray(new QuantifiableVariable[0])) : null;
+            args = visitArguments(ctx.call().argument_list());
+            if (boundVars != null) {
+                unbindVars(origVars);
+            }
+        }
+
+        assert firstName != null;
+        Operator op;
+
+        if ("skip".equals(firstName)) {
+            op = UpdateJunctor.SKIP;
+        } else {
+            op = lookupVarfuncId(ctx, firstName,
+                genericArgsCtxt);
+        }
+
+        Term current;
+        Operator finalOp = op;
+        if (op instanceof ParsableVariable) {
+            if (args != null) {
+                semanticError(ctx, "You used the variable `%s` like a predicate or function.", op);
+            }
+            if (boundVars != null) {
+                // addWarning(ctx, "Bounded variable are ignored on a variable");
+            }
+            current = termForParsedVariable((ParsableVariable) op, ctx);
+        } else {
+            if (boundVars == null) {
+                Term[] finalArgs = args;
+                current = capsulateTf(ctx, () -> getTermFactory().createTerm(finalOp, finalArgs));
+            } else {
+                // sanity check
+                assert op instanceof Function;
+                for (int i = 0; i < args.length; i++) {
+                    if (i < op.arity() && !op.bindVarsAt(i)) {
+                        for (QuantifiableVariable qv : args[i].freeVars()) {
+                            if (boundVars.contains(qv)) {
+                                semanticError(ctx,
+                                    "Building function term " + op
+                                        + " with bound variables failed: " + "Variable " + qv
+                                        + " must not occur free in subterm " + args[i]);
+                            }
+                        }
+                    }
+                }
+                ImmutableArray<QuantifiableVariable> finalBoundVars = boundVars;
+                // create term
+                Term[] finalArgs1 = args;
+                current = capsulateTf(ctx,
+                    () -> getTermFactory().createTerm(finalOp, finalArgs1, finalBoundVars));
+            }
+        }
+        return current;
+    }
+
+    public Object visitFuncpred_name(KeYSmartMLDLParser.Funcpred_nameContext ctx) {
+        List<String> parts = mapOf(ctx.name.simple_ident());
+        String varfuncid = ctx.name.getText();
+
+        if (ctx.INT_LITERAL() != null) {// number
+            return toZNotation(ctx.INT_LITERAL().getText(), functions());
+        }
+
+        assert parts != null && varfuncid != null;
+
+        if ("skip".equals(varfuncid)) {
+            return UpdateJunctor.SKIP;
+        }
+
+        Operator op;
+        String firstName =
+            ctx.name == null ? ctx.INT_LITERAL().getText()
+                    : ctx.name.simple_ident(0).getText();
+        op = lookupVarfuncId(ctx, firstName, null);
+        if (op instanceof ProgramVariable v && ctx.name.simple_ident().size() > 1) {
+            List<KeYSmartMLDLParser.Simple_identContext> otherParts =
+                ctx.name.simple_ident().subList(1, ctx.name.simple_ident().size());
+            Term tv = getServices().getTermFactory().createTerm(v);
+            String memberName = otherParts.get(0).getText();
+            memberName = StringUtil.trim(memberName, "()");
+            // Operator attr = getAttributeInPrefixSort(v.sort(), memberName);
+            // return createAttributeTerm(tv, attr, ctx);
+            throw new RuntimeException("TODO");
+        }
+        return op;
+    }
+
+    private Term toZNotation(String text, Namespace<@NonNull Function> functions) {
+        throw new RuntimeException("Not implemented yet: " + text);
+    }
+
+    @Override
+    public @Nullable Object visitIfThenElseTerm(KeYSmartMLDLParser.IfThenElseTermContext ctx) {
+        Term condF = (Term) ctx.condF.accept(this);
+        if (condF.sort() != SmartMLDLTheory.FORMULA) {
+            semanticError(ctx, "Condition of an \\if-then-else term has to be a formula.");
+        }
+        Term thenT = (Term) ctx.thenT.accept(this);
+        Term elseT = (Term) ctx.elseT.accept(this);
+        return capsulateTf(ctx,
+            () -> getTermFactory().createTerm(IfThenElse.IF_THEN_ELSE, condF, thenT, elseT));
+    }
+
+    @Override
+    public Object visitIfExThenElseTerm(KeYSmartMLDLParser.IfExThenElseTermContext ctx) {
+        Namespace<QuantifiableVariable> orig = variables();
+        List<QuantifiableVariable> exVars = accept(ctx.bound_variables());
+        Term condF = accept(ctx.condF);
+        if (condF.sort() != SmartMLDLTheory.FORMULA) {
+            semanticError(ctx, "Condition of an \\ifEx-then-else term has to be a formula.");
+        }
+
+        Term thenT = accept(ctx.thenT);
+        Term elseT = accept(ctx.elseT);
+        ImmutableArray<QuantifiableVariable> exVarsArray = new ImmutableArray<>(exVars);
+        // Term result =
+        // getTermFactory().createTerm(IfExThenElse.IF_EX_THEN_ELSE,
+        // new ImmutableArray<>(new Term[]{ condF, thenT, elseT }),
+        // exVarsArray,
+        // null);
+        // unbindVars(orig);
+        // return result;
+        throw new RuntimeException("Not implemented yet: if-then-else-ex");
+    }
+
+    @Override
+    public @Nullable Object visitParallel_term(KeYSmartMLDLParser.Parallel_termContext ctx) {
+        List<Term> t = mapOf(ctx.elementary_update_term());
+        Term a = t.get(0);
+        for (int i = 1; i < t.size(); i++) {
+            a = getTermFactory().createTerm(UpdateJunctor.PARALLEL_UPDATE, a, t.get(i));
+        }
+        return a;
+    }
+
+    @Override
+    public Object visitPrimitive_labeled_term(
+            KeYSmartMLDLParser.Primitive_labeled_termContext ctx) {
+        return accept(ctx.primitive_term());
+        // return updateOrigin(t, ctx, services);
+    }
+
+    @Override
+    public @Nullable Object visitElementary_update_term(
+            KeYSmartMLDLParser.Elementary_update_termContext ctx) {
+        Term a = accept(ctx.a);
+        Term b = accept(ctx.b);
+        if (b != null) {
+            return getServices().getTermBuilder().elementary(Objects.requireNonNull(a), b);
+        }
+        return a;
+    }
+
+    @Override
+    public @Nullable Object visitEquivalence_term(KeYSmartMLDLParser.Equivalence_termContext ctx) {
+        Term a = accept(ctx.a);
+        if (ctx.b.isEmpty()) {
+            return a;
+        }
+
+        Term cur = a;
+        for (KeYSmartMLDLParser.Implication_termContext context : ctx.b) {
+            Term b = accept(context);
+            cur = binaryTerm(ctx, Equality.EQV, cur, b);
+
+        }
+        return cur;
+    }
+
+    @Override
+    public @Nullable Object visitImplication_term(KeYSmartMLDLParser.Implication_termContext ctx) {
+        Term termL = accept(ctx.a);
+        Term termR = accept(ctx.b);
+        return binaryTerm(ctx, Junctor.IMP, termL, termR);
+    }
+
+    @Override
+    public @Nullable Object visitDisjunction_term(KeYSmartMLDLParser.Disjunction_termContext ctx) {
+        Term t = accept(ctx.a);
+        for (var c : ctx.b) {
+            t = binaryTerm(ctx, Junctor.OR, t, accept(c));
+        }
+        return t;
+    }
+
+    @Override
+    public @Nullable Object visitConjunction_term(KeYSmartMLDLParser.Conjunction_termContext ctx) {
+        Term t = accept(ctx.a);
+        for (var c : ctx.b) {
+            t = binaryTerm(ctx, Junctor.AND, t, accept(c));
+        }
+        return t;
+    }
+
+    private @Nullable Term binaryTerm(ParserRuleContext ctx, Operator operator, @Nullable Term left,
+            @Nullable Term right) {
+        if (right == null) {
+            return left;
+        }
+        return capsulateTf(ctx,
+            () -> getTermFactory().createTerm(operator, Objects.requireNonNull(left), right));
+    }
+
+    @Override
+    public @Nullable Object visitEquality_term(KeYSmartMLDLParser.Equality_termContext ctx) {
+        Term termL = accept(ctx.a);
+        Term termR = accept(ctx.b);
+        Term eq = binaryTerm(ctx, Equality.EQUALS, termL, termR);
+        if (ctx.NOT_EQUALS() != null) {
+            return capsulateTf(ctx, () -> getTermFactory().createTerm(Junctor.NOT, eq));
+        }
+        return eq;
+    }
+
+    @Override
+    public @Nullable Object visitComparison_term(KeYSmartMLDLParser.Comparison_termContext ctx) {
+        Term termL = accept(ctx.a);
+        Term termR = accept(ctx.b);
+
+        if (termR == null) {
+            return termL;
+        }
+
+        String op_name = "";
+        if (ctx.LESS() != null) {
+            op_name = "lt";
+        }
+        if (ctx.LESSEQUAL() != null) {
+            op_name = "leq";
+        }
+        if (ctx.GREATER() != null) {
+            op_name = "gt";
+        }
+        if (ctx.GREATEREQUAL() != null) {
+            op_name = "geq";
+        }
+        throw new RuntimeException("Not implemented yet: " + op_name);
+        // return binaryLDTSpecificTerm(ctx, op_name, termL, termR);
+    }
+
+    @Override
+    public @Nullable Object visitWeak_arith_term(KeYSmartMLDLParser.Weak_arith_termContext ctx) {
+        Term termL = Objects.requireNonNull(accept(ctx.a));
+        if (ctx.op.isEmpty()) {
+            return termL;
+        }
+        /*
+         * List<Term> terms = mapOf(ctx.b);
+         * Term last = termL;
+         * for (int i = 0; i < terms.size(); i++) {
+         * String opname = "";
+         * switch (ctx.op.get(i).getType()) {
+         * case KeYSmartMLDLLexer.UTF_INTERSECT -> opname = "intersect";
+         * case KeYSmartMLDLLexer.UTF_SETMINUS -> opname = "setMinus";
+         * case KeYSmartMLDLLexer.UTF_UNION -> opname = "union";
+         * case KeYSmartMLDLLexer.PLUS -> opname = "add";
+         * case KeYSmartMLDLLexer.MINUS -> opname = "sub";
+         * default -> semanticError(ctx, "Unexpected token: %s", ctx.op.get(i));
+         * }
+         * Term cur = terms.get(i);
+         * last = binaryLDTSpecificTerm(ctx, opname, last, cur);
+         * }
+         * return last;
+         */
+        throw new RuntimeException("Not implemented yet: " + ctx.getText());
+    }
+
+    @Override
+    public @Nullable Object visitStrong_arith_term_1(
+            KeYSmartMLDLParser.Strong_arith_term_1Context ctx) {
+        Term termL = accept(ctx.a);
+        if (ctx.b.isEmpty()) {
+            return termL;
+        }
+        List<Term> terms = mapOf(ctx.b);
+        Term last = termL;
+        for (Term cur : terms) {
+            throw new RuntimeException("Not implemented yet: " + cur);
+            // last = binaryLDTSpecificTerm(ctx, "mul", last, cur);
+        }
+        return last;
+    }
+
+    @Override
+    public @Nullable Object visitStrong_arith_term_2(
+            KeYSmartMLDLParser.Strong_arith_term_2Context ctx) {
+        if (ctx.b.isEmpty()) { // fast path
+            return accept(ctx.a);
+        }
+
+        List<Term> termL = mapOf(ctx.b);
+        // List<String> opName = ctx.op.stream().map(it -> it.getType()== KeYLexer.PERCENT ? "mod" :
+        // "div").collect(Collectors.toList());
+
+        Term term = accept(ctx.a);
+        var sort = term.sort();
+        if (sort == null) {
+            semanticError(ctx, "No sort for term '%s'", term);
+        }
+        throw new RuntimeException("Not implemented yet: " + term);
+        /*
+         * var ldt = services.getLDTs().getLDTFor(sort);
+         *
+         * if (ldt == null) {
+         * // falling back to integer ldt (for instance for untyped schema variables)
+         * ldt = services.getLDTs().getIntLDT();
+         * }
+         *
+         * assert ctx.op.size() == ctx.b.size();
+         *
+         * for (int i = 0; i < termL.size(); i++) {
+         * var opName = ctx.op.get(i).getType() == KeYSmartMLDLLexer.PERCENT ? "mod" : "div";
+         * Function op = ldt.getFunctionFor(opName, services);
+         * if (op == null) {
+         * semanticError(ctx, "Could not find function symbol '%s' for sort '%s'.", opName,
+         * sort);
+         * }
+         * term = binaryTerm(ctx, op, term, termL.get(i));
+         * }
+         * return term;
+         */
+    }
+
+    @Override
+    public @Nullable Object visitSubstitution_term(
+            KeYSmartMLDLParser.Substitution_termContext ctx) {
+        SubstOp op = SubstOp.SUBST;
+        Namespace<QuantifiableVariable> orig = variables();
+        AbstractSortedOperator v = accept(ctx.bv);
+        unbindVars(orig);
+        if (v instanceof LogicVariable) {
+            // bindVar((LogicVariable) v);
+            throw new RuntimeException("TODO @ DD");
+        } else {
+            bindVar();
+        }
+
+        Term a1 = accept(ctx.replacement);
+        Term a2 = oneOf(ctx.atom_prefix(), ctx.unary_formula());
+        try {
+            Term result =
+                getServices().getTermBuilder().subst(op, (QuantifiableVariable) v, a1, a2);
+            return result;
+        } catch (Exception e) {
+            throw new BuildingException(ctx, e);
+        } finally {
+            unbindVars(orig);
+        }
+    }
+
+    @Override
+    public @Nullable Object visitCast_term(KeYSmartMLDLParser.Cast_termContext ctx) {
+        return super.visitCast_term(ctx);
+    }
+
+    @Override
+    public @Nullable Object visitUnary_minus_term(KeYSmartMLDLParser.Unary_minus_termContext ctx) {
+        Term result = accept(ctx.sub);
+        assert result != null;
+        if (ctx.MINUS() != null) {
+            throw new RuntimeException("Not implemented yet: " + ctx.MINUS().getText());
+            /*
+             *
+             * Operator Z = functions().lookup("Z");
+             * if (result.op() == Z) {
+             * // weigl: rewrite neg(Z(1(#)) to Z(neglit(1(#))
+             * // This mimics the old KeYRustyParser behaviour. Unknown if necessary.
+             * final Function neglit = services.getLDTs().getIntLDT().getNegativeNumberSign();
+             * final Term num = result.sub(0);
+             * return capsulateTf(ctx,
+             * () -> getTermFactory().createTerm(Z, getTermFactory().createTerm(neglit, num)));
+             * } else if (result.sort() != SmartMLDLTheory.FORMULA) {
+             * Sort sort = result.sort();
+             * if (sort == null) {
+             * semanticError(ctx, "No sort for %s", result);
+             * }
+             * LDT ldt = services.getLDTs().getLDTFor(sort);
+             * if (ldt == null) {
+             * // falling back to integer ldt (for instance for untyped schema variables)
+             * ldt = services.getLDTs().getIntLDT();
+             * }
+             * // TODO(DD): Can this be simplified?
+             * Function op = ldt.getFunctionFor("neg", services);
+             * if (op == null) {
+             * semanticError(ctx, "Could not find function symbol 'neg' for sort '%s'.", sort);
+             * }
+             * return capsulateTf(ctx, () -> getTermFactory().createTerm(op, result));
+             * } else {
+             * semanticError(ctx, "Formulas cannot be prefixed with '-'");
+             * }
+             */
+        }
+        return result;
+    }
+}

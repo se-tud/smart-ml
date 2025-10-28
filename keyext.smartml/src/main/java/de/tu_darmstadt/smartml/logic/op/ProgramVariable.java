@@ -12,11 +12,14 @@ import org.key_project.logic.op.Modifier;
 import org.key_project.logic.op.UpdateableOperator;
 import org.key_project.logic.sort.Sort;
 
+import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import de.tu_darmstadt.smartml.program.abstraction.KeYSmartMLType;
 import de.tu_darmstadt.smartml.program.abstraction.Type;
+import de.tu_darmstadt.smartml.program.visitor.Visitor;
 import org.jspecify.annotations.NonNull;
 
-public class ProgramVariable extends AbstractSortedOperator implements UpdateableOperator {
+public class ProgramVariable extends AbstractSortedOperator
+        implements SmartMLProgramElement, UpdateableOperator {
     private final KeYSmartMLType type;
 
     public ProgramVariable(Name name, Sort s, KeYSmartMLType type) {
@@ -52,5 +55,10 @@ public class ProgramVariable extends AbstractSortedOperator implements Updateabl
             typeName = type.getSort().name().toString();
         }
         return typeName + " " + name() + ";\n";
+    }
+
+    @Override
+    public void visit(Visitor v) {
+        v.performActionOnProgramVariable(v);
     }
 }

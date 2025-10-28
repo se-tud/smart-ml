@@ -1,0 +1,367 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
+package de.tu_darmstadt.smartml.parser.builder;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.function.Supplier;
+
+import org.key_project.logic.Choice;
+import org.key_project.logic.Name;
+import org.key_project.logic.Named;
+import org.key_project.logic.Namespace;
+import org.key_project.logic.Term;
+import org.key_project.logic.op.Function;
+import org.key_project.logic.op.Operator;
+import org.key_project.logic.op.ParsableVariable;
+import org.key_project.logic.op.QuantifiableVariable;
+import org.key_project.logic.op.sv.SchemaVariable;
+import org.key_project.logic.sort.Sort;
+import org.key_project.prover.rules.RuleSet;
+import org.key_project.util.collection.ImmutableList;
+import org.key_project.util.collection.ImmutableSLList;
+
+import de.tu_darmstadt.smartml.logic.NamespaceSet;
+import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
+import de.tu_darmstadt.smartml.logic.op.ParametricFunctionInstance;
+import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
+import de.tu_darmstadt.smartml.logic.sort.*;
+import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser;
+import de.tu_darmstadt.smartml.program.abstraction.KeYSmartMLType;
+import de.tu_darmstadt.smartml.services.Services;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public class DefaultBuilder extends AbstractBuilder<@Nullable Object> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultBuilder.class);
+
+    protected final Services services;
+    protected final NamespaceSet nss;
+    private Namespace<@NonNull SchemaVariable> schemaVariablesNamespace = new Namespace<>();
+
+    public DefaultBuilder(Services services, NamespaceSet nss) {
+        this.services = services;
+        this.nss = nss;
+    }
+
+
+    protected ImmutableList<GenericArgument> getParamSortArgs(
+            KeYSmartMLDLParser.Formal_sort_argsContext ctx,
+            ImmutableList<GenericParameter> params) {
+        if (ctx.formal_sort_arg().size() != params.size()) {
+            semanticError(ctx, "Expected %d sort arguments, got only %d",
+                params.size(), ctx.formal_sort_arg().size());
+        }
+        ImmutableList<GenericArgument> args = ImmutableSLList.nil();
+        for (int i = params.size() - 1; i >= 0; i--) {
+            var expectConst = params.get(i) instanceof ConstParam;
+            var arg = ctx.formal_sort_arg(i);
+            var isConst = arg.CONST() != null;
+            if (isConst && !expectConst) {
+                semanticError(arg, "Expected argument %s to be a sort argument but got const %s",
+                    params.get(i), arg.getText());
+            }
+            if (!isConst && expectConst) {
+                semanticError(arg, "Expected argument %s to be a const argument but got sort %s",
+                    params.get(i), arg.getText());
+            }
+            if (isConst) {
+                var t = visitTerm(arg.term());
+                Term c;
+                if (t instanceof String s) {
+                    var op = nss.functions().lookup(s);
+                    if (op == null) {
+                        semanticError(arg, "Could not find constant: %s", s);
+                    }
+                    c = services.getTermBuilder().func(op);
+                } else {
+                    c = (Term) t;
+                }
+
+                Sort expectedSort = ((ConstParam) params.get(i)).sort();
+                if (!c.sort().extendsTrans(expectedSort) && !(c.op() instanceof SchemaVariable)) {
+                    semanticError(arg, "Constant %s is sort %s, which does not extend %s", c,
+                        c.sort(), expectedSort);
+                }
+                args = args.prepend(new TermArg(c));
+            } else {
+                var sort = visitSortId(arg.sortId());
+                args = args.prepend(new SortArg(sort));
+            }
+        }
+        return args;
+    }
+
+    protected Namespace<@NonNull ProgramVariable> programVariables() {
+        return namespaces().programVariables();
+    }
+
+    @Override
+    public List<String> visitPvset(KeYSmartMLDLParser.PvsetContext ctx) {
+        return mapOf(ctx.varId());
+    }
+
+    @Override
+    public List<RuleSet> visitRulesets(KeYSmartMLDLParser.RulesetsContext ctx) {
+        return mapOf(ctx.ruleset());
+    }
+
+    @Override
+    public RuleSet visitRuleset(KeYSmartMLDLParser.RulesetContext ctx) {
+        String id = ctx.IDENT().getText();
+        Name name = new Name(id);
+        RuleSet h = ruleSets().lookup(name);
+        if (h == null) {
+            semanticError(ctx, String.format("Rule set %s was not defined.", name));
+        }
+        return h;
+    }
+
+    protected Named lookup(Name n) {
+        final Namespace<?>[] lookups =
+            { programVariables(),
+                variables(), functions() };
+        return doLookup(n, lookups);
+    }
+
+    protected <T> T doLookup(Name n, Namespace<?>... lookups) {
+        for (Namespace<?> lookup : lookups) {
+            Object l;
+            if (lookup != null && (l = lookup.lookup(n)) != null) {
+                try {
+                    return (T) l;
+                } catch (ClassCastException e) {
+                }
+            }
+        }
+        return null;
+    }
+
+    public NamespaceSet namespaces() {
+        return nss;
+    }
+
+    protected Namespace<@NonNull QuantifiableVariable> variables() {
+        return namespaces().variables();
+    }
+
+    protected Namespace<@NonNull Sort> sorts() {
+        return namespaces().sorts();
+    }
+
+    protected Namespace<@NonNull Function> functions() {
+        return namespaces().functions();
+    }
+
+    protected Namespace<@NonNull RuleSet> ruleSets() {
+        return namespaces().ruleSets();
+    }
+
+    protected Namespace<@NonNull Choice> choices() {
+        return namespaces().choices();
+    }
+
+    protected <T> T withSortAndConsts(Namespace<@NonNull Sort> sorts,
+            Namespace<@NonNull Function> consts, Supplier<T> fn) {
+        var oldSorts = nss.sorts();
+        var oldFns = nss.functions();
+        nss.setSorts(sorts);
+        nss.setFunctions(consts);
+        var res = fn.get();
+        nss.setSorts(oldSorts);
+        nss.setFunctions(oldFns);
+        return res;
+    }
+
+    public String visitSimple_ident_dots(KeYSmartMLDLParser.Simple_ident_dotsContext ctx) {
+        return ctx.getText();
+    }
+
+    public List<Sort> visitArg_sorts_or_formula(
+            KeYSmartMLDLParser.Arg_sorts_or_formulaContext ctx) {
+        return mapOf(ctx.arg_sorts_or_formula_helper());
+    }
+
+    public Sort visitArg_sorts_or_formula_helper(
+            KeYSmartMLDLParser.Arg_sorts_or_formula_helperContext ctx) {
+        if (ctx.FORMULA() != null) {
+            return SmartMLDLTheory.FORMULA;
+        } else {
+            return accept(ctx.sortId());
+        }
+    }
+
+    protected void unbindVars(Namespace<@NonNull QuantifiableVariable> orig) {
+        namespaces().setVariables(orig);
+    }
+
+    /// looks up and returns the sort of the given name or null if none has been found
+    protected Sort lookupSort(String name) {
+        return sorts().lookup(new Name(name));
+    }
+
+
+    /// looks up a function, (program) variable or static query of the given name varfunc_id and the
+    /// argument terms args in the namespaces and SmartML info.
+    ///
+    /// @param varfuncName the String with the symbols name
+    /// @param genericArgsCtxt
+    protected Operator lookupVarfuncId(ParserRuleContext ctx, String varfuncName,
+            KeYSmartMLDLParser.Formal_sort_argsContext genericArgsCtxt) {
+        Name name = new Name(varfuncName);
+
+        LOGGER.debug("Lookup array ignores term transformers. Implement and fix.");
+        Operator[] operators =
+            { schemaVariables().lookup(name), variables().lookup(name),
+                programVariables().lookup(new Name(varfuncName)),
+                functions().lookup(name),
+            // TODO: AbstractTermTransformer.name2metaop(varfuncName)
+            };
+
+        for (Operator op : operators) {
+            if (op != null) {
+                return op;
+            }
+        }
+
+        if (genericArgsCtxt != null) {
+            var d = nss.parametricFunctions().lookup(name);
+            if (d == null) {
+                semanticError(ctx, "Could not find parametric function: %s", name);
+                return null;
+            }
+            var args = getParamSortArgs(genericArgsCtxt, d.getParameters());
+            return ParametricFunctionInstance.get(d, args);
+        }
+        semanticError(ctx, "Could not find (program) variable or constant %s", varfuncName);
+        return null;
+    }
+
+    public String visitString_value(KeYSmartMLDLParser.String_valueContext ctx) {
+        return ctx.getText().substring(1, ctx.getText().length() - 1);
+    }
+
+    public Services getServices() {
+        return services;
+    }
+
+    public Namespace<SchemaVariable> schemaVariables() {
+        return schemaVariablesNamespace;
+    }
+
+    public void setSchemaVariables(Namespace<SchemaVariable> ns) {
+        this.schemaVariablesNamespace = ns;
+    }
+
+    @Override
+    public Object visitVarIds(KeYSmartMLDLParser.VarIdsContext ctx) {
+        Collection<String> ids = accept(ctx.simple_ident_comma_list());
+        List<ParsableVariable> list = new ArrayList<>(ids.size());
+        for (String id : ids) {
+            ParsableVariable v = (ParsableVariable) lookup(new Name(id));
+            if (v == null) {
+                semanticError(ctx, "Variable " + id + " not declared.");
+            }
+            list.add(v);
+        }
+        return list;
+    }
+
+    @Override
+    public Object visitSimple_ident_dots_comma_list(
+            KeYSmartMLDLParser.Simple_ident_dots_comma_listContext ctx) {
+        return mapOf(ctx.simple_ident_dots());
+    }
+
+    @Override
+    public String visitSimple_ident(KeYSmartMLDLParser.Simple_identContext ctx) {
+        return ctx.IDENT().getText();
+    }
+
+    @Override
+    public List<String> visitSimple_ident_comma_list(
+            KeYSmartMLDLParser.Simple_ident_comma_listContext ctx) {
+        return mapOf(ctx.simple_ident());
+    }
+
+    @Override
+    public List<Boolean> visitWhere_to_bind(KeYSmartMLDLParser.Where_to_bindContext ctx) {
+        List<Boolean> list = new ArrayList<>(ctx.children.size());
+        ctx.b.forEach(it -> list.add(it.getText().equalsIgnoreCase("true")));
+        return list;
+    }
+
+    @Override
+    public List<Sort> visitArg_sorts(KeYSmartMLDLParser.Arg_sortsContext ctx) {
+        return mapOf(ctx.sortId());
+    }
+
+    @Override
+    public Sort visitSortId(KeYSmartMLDLParser.SortIdContext ctx) {
+        String name = ctx.id.getText();
+        Sort s;
+        if (ctx.formal_sort_args() != null) {
+            // parametric sorts should be instantiated
+            ParametricSortDecl sortDecl = nss.parametricSorts().lookup(name);
+            if (sortDecl == null) {
+                semanticError(ctx, "Could not find polymorphic sort: %s", name);
+            }
+            ImmutableList<GenericArgument> parameters =
+                getParamSortArgs(ctx.formal_sort_args(), sortDecl.getParameters());
+            s = ParametricSortInstance.get(sortDecl, parameters);
+        } else {
+            s = lookupSort(name);
+            if (s == null) {
+                semanticError(ctx, "Could not find sort: %s", ctx.getText());
+            }
+        }
+        return s;
+    }
+
+    @Override
+    public KeYSmartMLType visitTypemapping(KeYSmartMLDLParser.TypemappingContext ctx) {
+        String type = visitSimple_ident_dots(ctx.simple_ident_dots());
+        KeYSmartMLType kst = services.getSmartMLInfo().getKeYSmartMLType(type);
+        if (kst == null) {
+            Sort sort = lookupSort(type);
+            if (sort != null) {
+                kst = new KeYSmartMLType(null, sort);
+            }
+        }
+
+        if (kst == null) {
+            semanticError(ctx, "Unknown type: " + type);
+        }
+
+        return kst;
+    }
+
+
+    public Object visitFuncpred_name(KeYSmartMLDLParser.Funcpred_nameContext ctx) {
+        return ctx.getText();
+    }
+
+    @Override
+    public @Nullable List<GenericParameter> visitFormal_sort_param_decls(
+            KeYSmartMLDLParser.Formal_sort_param_declsContext ctx) {
+        return mapOf(ctx.formal_sort_param_decl());
+    }
+
+    @Override
+    public GenericParameter visitFormal_sort_param_decl(
+            KeYSmartMLDLParser.Formal_sort_param_declContext ctx) {
+        if (ctx.simple_ident() != null) {
+            var name = ctx.simple_ident().getText();
+
+            return new GenericSortParam(new GenericSort(new Name(name)));
+        }
+        var name = new Name(ctx.const_param_decl().simple_ident().getText());
+        var sort = visitSortId(ctx.const_param_decl().sortId());
+        return new ConstParam(name, sort);
+    }
+}

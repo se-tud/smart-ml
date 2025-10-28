@@ -10,6 +10,7 @@ import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.TermBuilder;
 import de.tu_darmstadt.smartml.logic.TermFactory;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
+import de.tu_darmstadt.smartml.program.SmartMLModel;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 
 /// Service class providing access to
@@ -22,15 +23,17 @@ public class Services implements LogicServices {
     private final NamespaceSet namespaces;
     private final TermFactory tf;
     private final TermBuilder tb;
+    private final SmartMLModel smartMLModel;
 
-    private Services() {
+    public Services() {
         namespaces = new NamespaceSet();
         tf = new TermFactory();
         tb = new TermBuilder(tf, this);
+        smartMLModel = null;
     }
 
     /// retrieves the namespaces for logic symbols like operators, functions, program variables as
-    /// well as rulesets and mored
+    /// well as rulesets and more
     /// @return collection of namespaces
     public NamespaceSet getNamespaces() {
         return namespaces;
@@ -58,5 +61,9 @@ public class Services implements LogicServices {
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "
                 + pe.getClass());
+    }
+
+    public SmartMLModel getSmartMLInfo() {
+        return smartMLModel;
     }
 }
