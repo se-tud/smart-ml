@@ -465,8 +465,7 @@ public class ExpressionBuilder extends DefaultBuilder {
         if ("skip".equals(firstName)) {
             op = UpdateJunctor.SKIP;
         } else {
-            op = lookupVarfuncId(ctx, firstName,
-                genericArgsCtxt);
+            op = lookupVarfuncId(ctx, firstName, genericArgsCtxt);
         }
 
         Term current;
@@ -558,11 +557,13 @@ public class ExpressionBuilder extends DefaultBuilder {
 
     @Override
     public Object visitIfExThenElseTerm(KeYSmartMLDLParser.IfExThenElseTermContext ctx) {
-        Namespace<QuantifiableVariable> orig = variables();
+        Namespace<@NonNull QuantifiableVariable> orig = variables();
         List<QuantifiableVariable> exVars = accept(ctx.bound_variables());
         Term condF = accept(ctx.condF);
-        if (condF.sort() != SmartMLDLTheory.FORMULA) {
+        if (condF == null || condF.sort() != SmartMLDLTheory.FORMULA) {
             semanticError(ctx, "Condition of an \\ifEx-then-else term has to be a formula.");
+        } else if (exVars == null || exVars.isEmpty()) {
+            semanticError(ctx, "An \\ifEx-then-else term has to bind a variable.");
         }
 
         Term thenT = accept(ctx.thenT);
@@ -581,7 +582,7 @@ public class ExpressionBuilder extends DefaultBuilder {
     @Override
     public @Nullable Object visitParallel_term(KeYSmartMLDLParser.Parallel_termContext ctx) {
         List<Term> t = mapOf(ctx.elementary_update_term());
-        Term a = t.get(0);
+        Term a = t.getFirst();
         for (int i = 1; i < t.size(); i++) {
             a = getTermFactory().createTerm(UpdateJunctor.PARALLEL_UPDATE, a, t.get(i));
         }
