@@ -12,7 +12,11 @@ import de.tu_darmstadt.smartml.logic.TermFactory;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 
-
+/// Service class providing access to
+/// * namespaces
+/// * program model
+/// * creators (see [TermFactory] and [TermBuilder])
+/// * theories/LDTs
 public class Services implements LogicServices {
 
     private final NamespaceSet namespaces;
@@ -25,18 +29,27 @@ public class Services implements LogicServices {
         tb = new TermBuilder(tf, this);
     }
 
+    /// retrieves the namespaces for logic symbols like operators, functions, program variables as
+    /// well as rulesets and mored
+    /// @return collection of namespaces
     public NamespaceSet getNamespaces() {
         return namespaces;
     }
 
+    /// retrieves the low level factory for constructing terms
+    /// @return the [TermFactory]
     public TermFactory getTermFactory() {
         return tf;
     }
 
+    /// retrieves a high-level builder for constructing terms in a convenient and more readable
+    /// manner
+    /// @return the [TermBuilder]
     public TermBuilder getTermBuilder() {
         return tb;
     }
 
+    /// this functionality should be moved to an external class
     public static Term convertToLogicElement(SmartMLProgramElement pe, Services services) {
         var tb = services.getTermBuilder();
         if (pe instanceof ProgramVariable pv) {
