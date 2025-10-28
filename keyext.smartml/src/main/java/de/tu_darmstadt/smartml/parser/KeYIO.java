@@ -99,6 +99,10 @@ public class KeYIO {
         }
         final Sequent seq = (Sequent) ctx.accept(visitor);
         warnings = visitor.getBuildingIssues();
+        if (seq == null) {
+            throw new RuntimeException(
+                "Could not create a sequent of the given string '" + stream + "' " + warnings);
+        }
         return seq;
     }
 
@@ -174,21 +178,21 @@ public class KeYIO {
      * return visitor.getTopLevelTaclets();
      * }
      */
-    public List<BuildingIssue> evalDeclarations(KeYAst.File ctx) {
+    public List<BuildingIssue> evalDeclarations(KeYAst.@NonNull File ctx) {
         DeclarationBuilder declBuilder = new DeclarationBuilder(services, nss);
         ctx.accept(declBuilder);
         warnings.addAll(declBuilder.getBuildingIssues());
         return declBuilder.getBuildingIssues();
     }
 
-    public List<BuildingIssue> evalFuncAndPred(KeYAst.File ctx) {
+    public List<BuildingIssue> evalFuncAndPred(KeYAst.@NonNull File ctx) {
         FunctionPredicateBuilder visitor = new FunctionPredicateBuilder(services, nss);
         ctx.accept(visitor);
         warnings.addAll(visitor.getBuildingIssues());
         return visitor.getBuildingIssues();
     }
 
-    public void setSchemaNamespace(Namespace<SchemaVariable> ns) {
+    public void setSchemaNamespace(Namespace<@NonNull SchemaVariable> ns) {
         schemaNamespace = ns;
     }
 
@@ -205,7 +209,6 @@ public class KeYIO {
     /**
      * Loading of complete KeY files into the given schema. Supports recursive loading, but does not
      * provide support for SmartML and SmartML type information.
-     * <p>
      */
     public class Loader {
         private final URL resource;
@@ -313,7 +316,7 @@ public class KeYIO {
                 throw new IllegalStateException();
             }
             ProblemFinder pf = new ProblemFinder(services, nss);
-            ctx.get(0).accept(pf);
+            ctx.getFirst().accept(pf);
             return pf;
         }
         /*
