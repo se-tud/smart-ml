@@ -5,7 +5,7 @@ package de.tu_darmstadt.smartml.program.visitor;
 
 import de.tu_darmstadt.smartml.program.Program;
 import de.tu_darmstadt.smartml.program.VarTarget;
-import de.tu_darmstadt.smartml.program.decl.FunctionDecl;
+import de.tu_darmstadt.smartml.program.decl.*;
 import de.tu_darmstadt.smartml.program.expr.*;
 import de.tu_darmstadt.smartml.program.stmt.*;
 import de.tu_darmstadt.smartml.program.type.*;
@@ -18,6 +18,11 @@ public interface Visitor {
 
     // declarations
     void performActionOnFunctionDecl(FunctionDecl x);
+    void performActionOnDatatypeDecl(DatatypeDecl x);
+    void performActionOnExceptionDecl(ExceptionDecl x);
+    void performActionOnResourceDecl(ResourceDecl x);
+    void performActionOnInterfaceDecl(InterfaceDecl x);
+    void performActionOnContractDecl(ContractDecl x);
 
     // statements
     void performActionOnAssign(Assign x);
@@ -30,6 +35,7 @@ public interface Visitor {
     void performActionOnTryCatch(TryCatch x);
     void performActionOnTransaction(Transaction x);
     void performActionOnAssertError(AssertError x);
+    void performActionOnExpressionStatement(ExpressionStatement x);
 
     // expressions
     void performActionOnVar(Var x);
@@ -38,6 +44,7 @@ public interface Visitor {
     void performActionOnBinary(Binary x);
     void performActionOnUnaryNot(UnaryNot x);
     void performActionOnQualifiedAccess(QualifiedAccess x);
+    void performActionOnUnaryNeg(UnaryNeg x);
 
     // literals & names
     void performActionOnStringLit(StringLit x);
@@ -48,5 +55,7 @@ public interface Visitor {
     void performActionOnSmartType(SmartType x);
     void performActionOnPrimitiveType(PrimitiveType x);
     void performActionOnSchemaType(SchemaType x);
+
+
 
 }

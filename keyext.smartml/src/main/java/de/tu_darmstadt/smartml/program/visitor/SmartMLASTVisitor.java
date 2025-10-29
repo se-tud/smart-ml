@@ -36,6 +36,7 @@ public abstract class SmartMLASTVisitor extends SmartMLASTWalker implements Visi
     @Override public void performActionOnBlock(Block x) { doDefaultAction(x); }
     @Override public void performActionOnVarTarget(VarTarget x) { doDefaultAction(x); }
     @Override public void performActionOnFunctionDecl(FunctionDecl x) { doDefaultAction(x); }
+    @Override public void performActionOnExpressionStatement(ExpressionStatement x) { doDefaultAction(x); }
 
     @Override public void performActionOnAssign(Assign x) { doDefaultAction(x); }
     @Override public void performActionOnIf(If x) { doDefaultAction(x); }

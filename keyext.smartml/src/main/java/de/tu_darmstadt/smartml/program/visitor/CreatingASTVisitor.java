@@ -148,6 +148,19 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
         doDefaultAction(x);
     }
 
+    @Override
+    public void performActionOnExpressionStatement(ExpressionStatement x) {
+        DefaultAction def = new DefaultAction(x) {
+            @Override
+            SmartMLProgramElement createNewElement(ExtList cl) {
+                Expr e = cl.get(Expr.class);
+                return new ExpressionStatement(e);
+            }
+        };
+        def.doAction(x);
+    }
+
+
     /* ===================== Expressions ===================== */
 
     @Override
