@@ -1,3 +1,6 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.stmt;
 
 import java.util.List;
@@ -16,7 +19,11 @@ public final class Assign extends AbstractSmartMLElement implements Stmt {
         this.lhs = lhs;
         this.rhs = rhs;
     }
+
     public VarTarget lhs() { return lhs; }
+
     public Expr rhs() { return rhs; }
-    @Override public void visit(Visitor v) { v.performActionOnAssign(this); }
+
+    @Override
+    public void visit(Visitor v) { v.performActionOnAssign(this); }
 }

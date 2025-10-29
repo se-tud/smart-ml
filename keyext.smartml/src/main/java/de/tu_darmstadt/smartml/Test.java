@@ -8,9 +8,6 @@ import java.nio.file.Path;
 
 import de.tu_darmstadt.smartml.parser.SmartMLLexer;
 import de.tu_darmstadt.smartml.parser.SmartMLParser;
-import de.tu_darmstadt.smartml.program.Program;
-import de.tu_darmstadt.smartml.program.visitor.LoggingVisitor;
-import de.tu_darmstadt.smartml.services.Services;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -32,7 +29,7 @@ public class Test {
             System.out.println(" Parsed successfully: " + filename);
             System.out.println(tree.toStringTree(parser));
 
-                    } catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

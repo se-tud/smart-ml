@@ -1,10 +1,13 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.decl;
+
+import java.util.List;
 
 import de.tu_darmstadt.smartml.program.AbstractSmartMLElement;
 import de.tu_darmstadt.smartml.program.stmt.Block;
 import de.tu_darmstadt.smartml.program.visitor.Visitor;
-
-import java.util.List;
 
 public final class FunctionDecl extends AbstractSmartMLElement implements Decl {
     private final String name;
@@ -17,9 +20,12 @@ public final class FunctionDecl extends AbstractSmartMLElement implements Decl {
     }
 
     public String name() { return name; }
+
     public Block body() { return body; }
 
-    @Override public void visit(Visitor v) { v.performActionOnFunctionDecl(this); }
+    @Override
+    public void visit(Visitor v) { v.performActionOnFunctionDecl(this); }
 
-    @Override public String toString() { return "fn " + name + (body != null ? " {…}" : " ;"); }
+    @Override
+    public String toString() { return "fn " + name + (body != null ? " {…}" : " ;"); }
 }

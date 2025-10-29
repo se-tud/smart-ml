@@ -3,5 +3,17 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.calculus.rules;
 
+import org.key_project.prover.rules.Taclet;
+import org.key_project.prover.sequent.PosInOccurrence;
+
+import de.tu_darmstadt.smartml.services.Services;
+
 public class NoPosTacletApp extends TacletApp {
+    public static NoPosTacletApp createNoPosTacletApp(Taclet taclet) {
+        return null;
+    }
+
+    public NoPosTacletApp matchFind(PosInOccurrence pos, Services services) {
+        return null;
+    }
 }
