@@ -1,11 +1,14 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program;
+
+import java.util.List;
 
 import de.tu_darmstadt.smartml.program.expr.LValue;
 import de.tu_darmstadt.smartml.program.type.SmartType;
 import de.tu_darmstadt.smartml.program.visitor.Visitor;
 import org.jspecify.annotations.Nullable;
-
-import java.util.List;
 
 public final class VarTarget extends AbstractSmartMLElement {
     private final @Nullable SmartType type;
@@ -18,10 +21,14 @@ public final class VarTarget extends AbstractSmartMLElement {
         this.storage = storage;
         this.target = target;
     }
+
     public @Nullable SmartType type() { return type; }
+
     public boolean storage() { return storage; }
+
     public LValue target() { return target; }
 
-    @Override public void visit(Visitor v) { v.performActionOnVarTarget(this); }
+    @Override
+    public void visit(Visitor v) { v.performActionOnVarTarget(this); }
 
 }

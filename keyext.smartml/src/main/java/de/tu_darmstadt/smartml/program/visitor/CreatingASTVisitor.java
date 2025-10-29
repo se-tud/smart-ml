@@ -5,13 +5,12 @@ package de.tu_darmstadt.smartml.program.visitor;
 
 import java.util.*;
 
-import de.tu_darmstadt.smartml.program.VarTarget;
-import de.tu_darmstadt.smartml.program.decl.Decl;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
 import de.tu_darmstadt.smartml.program.Program;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.program.VarTarget;
 import de.tu_darmstadt.smartml.program.expr.*;
 import de.tu_darmstadt.smartml.program.stmt.*;
 import de.tu_darmstadt.smartml.services.Services;
@@ -75,7 +74,8 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
             cl.removeFirst();
             @SuppressWarnings("unchecked")
             java.util.List<de.tu_darmstadt.smartml.program.decl.Decl> ds =
-                    new java.util.ArrayList<>(java.util.Arrays.asList(cl.collect(de.tu_darmstadt.smartml.program.decl.Decl.class)));
+                new java.util.ArrayList<>(java.util.Arrays
+                        .asList(cl.collect(de.tu_darmstadt.smartml.program.decl.Decl.class)));
             addChild(new Program(ds));
             changed();
         } else {

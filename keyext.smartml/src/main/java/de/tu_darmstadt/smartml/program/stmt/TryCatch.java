@@ -1,10 +1,13 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.stmt;
+
+import java.util.List;
 
 import de.tu_darmstadt.smartml.program.AbstractSmartMLElement;
 import de.tu_darmstadt.smartml.program.VarTarget;
 import de.tu_darmstadt.smartml.program.visitor.Visitor;
-
-import java.util.List;
 
 public final class TryCatch extends AbstractSmartMLElement implements Stmt {
     private final Stmt tryStmt;
@@ -19,8 +22,11 @@ public final class TryCatch extends AbstractSmartMLElement implements Stmt {
     }
 
     public Stmt tryStmt() { return tryStmt; }
+
     public VarTarget catchVar() { return catchVar; }
+
     public Block catchBlock() { return catchBlock; }
 
-    @Override public void visit(Visitor v) { v.performActionOnTryCatch(this); }
+    @Override
+    public void visit(Visitor v) { v.performActionOnTryCatch(this); }
 }

@@ -32,28 +32,65 @@ public abstract class SmartMLASTVisitor extends SmartMLASTWalker implements Visi
 
     protected abstract void doDefaultAction(SmartMLProgramElement node);
 
-    @Override public void performActionOnProgram(Program x) { doDefaultAction(x); }
-    @Override public void performActionOnBlock(Block x) { doDefaultAction(x); }
-    @Override public void performActionOnVarTarget(VarTarget x) { doDefaultAction(x); }
-    @Override public void performActionOnFunctionDecl(FunctionDecl x) { doDefaultAction(x); }
+    @Override
+    public void performActionOnProgram(Program x) { doDefaultAction(x); }
 
-    @Override public void performActionOnAssign(Assign x) { doDefaultAction(x); }
-    @Override public void performActionOnIf(If x) { doDefaultAction(x); }
-    @Override public void performActionOnWhile(While x) { doDefaultAction(x); }
-    @Override public void performActionOnReturn(Return x) { doDefaultAction(x); }
-    @Override public void performActionOnLet(Let x) { doDefaultAction(x); }
-    @Override public void performActionOnCallStmt(CallStmt x) { doDefaultAction(x); }
-    @Override public void performActionOnEmptyStatement(EmptyStatement x) { doDefaultAction(x); }
-    @Override public void performActionOnTryCatch(TryCatch x) { doDefaultAction(x); }
-    @Override public void performActionOnTransaction(Transaction x) { doDefaultAction(x); }
-    @Override public void performActionOnAssertError(AssertError x) { doDefaultAction(x); }
+    @Override
+    public void performActionOnBlock(Block x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnVarTarget(VarTarget x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnFunctionDecl(FunctionDecl x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnAssign(Assign x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnIf(If x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnWhile(While x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnReturn(Return x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnLet(Let x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnCallStmt(CallStmt x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnEmptyStatement(EmptyStatement x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnTryCatch(TryCatch x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnTransaction(Transaction x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnAssertError(AssertError x) { doDefaultAction(x); }
 
 
-    @Override public void performActionOnVar(Var x) { doDefaultAction(x); }
-    @Override public void performActionOnIntLit(IntLit x) { doDefaultAction(x); }
-    @Override public void performActionOnBoolLit(BoolLit x) { doDefaultAction(x); }
-    @Override public void performActionOnBinary(Binary x) { doDefaultAction(x); }
-    @Override public void performActionOnUnaryNot(UnaryNot x) { doDefaultAction(x); }
-    @Override public void performActionOnQualifiedAccess(QualifiedAccess x) { doDefaultAction(x); }
+    @Override
+    public void performActionOnVar(Var x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnIntLit(IntLit x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnBoolLit(BoolLit x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnBinary(Binary x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnUnaryNot(UnaryNot x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnQualifiedAccess(QualifiedAccess x) { doDefaultAction(x); }
 
 }

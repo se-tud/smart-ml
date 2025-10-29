@@ -31,6 +31,7 @@ import de.tu_darmstadt.smartml.logic.sort.GenericSort;
 import de.tu_darmstadt.smartml.program.PossibleProgramPrefix;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import de.tu_darmstadt.smartml.program.stmt.Block;
+import de.tu_darmstadt.smartml.program.stmt.TryCatch;
 import de.tu_darmstadt.smartml.services.Services;
 
 public class TacletIndex {
@@ -497,10 +498,10 @@ public class TacletIndex {
     private static class PrefixOccurrences {
         /// the classes that represent prefix elements of a Rust block
         static final Class<?>[] prefixClasses =
-            new Class<?>[] { Block.class, /*
-                                           * Try.class, LoopScope.class,
-                                           * FunctionFrame.class
-                                           */ };
+            new Class<?>[] { Block.class, TryCatch.class /*
+                                                          * LoopScope.class,
+                                                          * FunctionFrame.class
+                                                          */ };
 
         /// number of prefix types
         static final int PREFIXTYPES = prefixClasses.length;

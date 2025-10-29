@@ -19,7 +19,8 @@ public abstract class SmartMLASTWalker {
     }
 
     protected void walk(SmartMLProgramElement node) {
-        if (node == null) return;
+        if (node == null)
+            return;
         for (int i = 0; i < node.getChildCount(); i++) {
             walk((SmartMLProgramElement) node.getChild(i));
         }

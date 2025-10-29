@@ -1,4 +1,10 @@
+/* This file is part of KeY - https://key-project.org
+ * KeY is licensed under the GNU General Public License Version 2
+ * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.stmt;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import de.tu_darmstadt.smartml.program.AbstractSmartMLElement;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
@@ -6,13 +12,10 @@ import de.tu_darmstadt.smartml.program.VarTarget;
 import de.tu_darmstadt.smartml.program.expr.Expr;
 import de.tu_darmstadt.smartml.program.visitor.Visitor;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class Let extends AbstractSmartMLElement implements Stmt {
     private final List<VarTarget> bindings; // lhs
-    private final List<Expr> inits;         // rhs
-    private final Stmt body;                // statement after IN
+    private final List<Expr> inits; // rhs
+    private final Stmt body; // statement after IN
 
     public Let(List<VarTarget> bindings, List<Expr> inits, Stmt body) {
         super(children(bindings, inits, body));
@@ -31,8 +34,11 @@ public final class Let extends AbstractSmartMLElement implements Stmt {
     }
 
     public List<VarTarget> bindings() { return bindings; }
+
     public List<Expr> inits() { return inits; }
+
     public Stmt body() { return body; }
 
-    @Override public void visit(Visitor v) { v.performActionOnLet(this); }
+    @Override
+    public void visit(Visitor v) { v.performActionOnLet(this); }
 }
