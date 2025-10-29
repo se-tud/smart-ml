@@ -9,10 +9,10 @@ import java.net.URL;
 
 import org.key_project.util.java.StringUtil;
 
-import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser;
 import de.tu_darmstadt.smartml.io.Includes;
 import de.tu_darmstadt.smartml.io.sources.RuleSource;
 import de.tu_darmstadt.smartml.io.sources.RuleSourceFactory;
+import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser;
 import de.tu_darmstadt.smartml.util.parsing.BuildingException;
 
 public class IncludeFinder extends AbstractBuilder<Void> {

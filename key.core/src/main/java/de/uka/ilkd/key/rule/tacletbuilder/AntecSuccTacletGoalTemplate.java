@@ -47,12 +47,13 @@ public class AntecSuccTacletGoalTemplate extends TacletGoalTemplate {
      *
      * @return Sequent being paramter in the rule goal replacewith(Seq)
      */
+    @Override
     public Sequent replaceWith() {
         return replacewith;
     }
 
     /**
-     * rertieves and returns all variables that are bound in the goal template
+     * retrieves and returns all variables that are bound in the goal template
      *
      * @return all variables that occur bound in this goal template
      */
@@ -62,15 +63,6 @@ public class AntecSuccTacletGoalTemplate extends TacletGoalTemplate {
         bvv.visit(replaceWith());
         return bvv.getBoundVariables().union(super.getBoundVariables());
     }
-
-    /**
-     * @return Sequent being paramter in the rule goal replacewith(Seq)
-     */
-    @Override
-    public Object replaceWithExpressionAsObject() {
-        return replacewith;
-    }
-
 
     @Override
     public boolean equals(Object o) {

@@ -27,6 +27,7 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.java.StringUtil;
 
+import de.tu_darmstadt.smartml.calculus.sequent.SmartMLSequentKit;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.SmartMLBlock;
 import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
@@ -36,7 +37,6 @@ import de.tu_darmstadt.smartml.parser.KeYSmartMLDLLexer;
 import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser;
 import de.tu_darmstadt.smartml.program.SchemaSmartMLReader;
 import de.tu_darmstadt.smartml.program.SmartMLReader;
-import de.tu_darmstadt.smartml.calculus.sequent.SmartMLSequentKit;
 import de.tu_darmstadt.smartml.rule.inst.sv.VariableSV;
 import de.tu_darmstadt.smartml.services.Services;
 import de.tu_darmstadt.smartml.theory.LDT;

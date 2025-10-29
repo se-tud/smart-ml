@@ -53,17 +53,6 @@ public class TacletGoalTemplate
 
 
     /**
-     * a Taclet may replace parts of sequent.
-     *
-     * @return term (or sequent) to be placed instead of the findexp-term. REMARK: returns 'null' if
-     *         there is no replace-with part ! Overwritten in subclasses !
-     */
-    public Object replaceWithExpressionAsObject() {
-        return null;
-    }
-
-
-    /**
      * the goal of a Taclet may introduce new rules. Call this method to get them
      *
      * @return IList<Taclet> contains new introduced rules

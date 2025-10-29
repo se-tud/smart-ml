@@ -6,10 +6,10 @@ package de.tu_darmstadt.smartml.parser;
 import java.net.URL;
 import java.util.List;
 
-import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser.*;
-import de.tu_darmstadt.smartml.parser.builder.*;
 import de.tu_darmstadt.smartml.calculus.proof.ProofSettings;
 import de.tu_darmstadt.smartml.io.Includes;
+import de.tu_darmstadt.smartml.parser.KeYSmartMLDLParser.*;
+import de.tu_darmstadt.smartml.parser.builder.*;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Interval;
