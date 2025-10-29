@@ -4,13 +4,20 @@
 package de.tu_darmstadt.smartml.services;
 
 import org.key_project.logic.LogicServices;
+import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 
+import de.tu_darmstadt.smartml.calculus.proof.Counter;
+import de.tu_darmstadt.smartml.calculus.proof.Proof;
+import de.tu_darmstadt.smartml.calculus.proof.mgt.SpecificationRepository;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.TermBuilder;
 import de.tu_darmstadt.smartml.logic.TermFactory;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
+import de.tu_darmstadt.smartml.program.SmartMLModel;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.services.naming.VariableNamer;
+import de.tu_darmstadt.smartml.theory.TheoryInfo;
 
 /// Service class providing access to
 /// * namespaces
@@ -22,15 +29,23 @@ public class Services implements LogicServices {
     private final NamespaceSet namespaces;
     private final TermFactory tf;
     private final TermBuilder tb;
+    private final SmartMLModel smartMLModel;
+    private final VariableNamer variableNamer = new VariableNamer(this);
+    private Proof proof;
+    private final SpecificationRepository specificationRepository;
 
-    private Services() {
+
+    public Services() {
         namespaces = new NamespaceSet();
         tf = new TermFactory();
         tb = new TermBuilder(tf, this);
+        smartMLModel = null;
+        proof = null;
+        specificationRepository = null;
     }
 
     /// retrieves the namespaces for logic symbols like operators, functions, program variables as
-    /// well as rulesets and mored
+    /// well as rulesets and more
     /// @return collection of namespaces
     public NamespaceSet getNamespaces() {
         return namespaces;
@@ -58,5 +73,41 @@ public class Services implements LogicServices {
         throw new IllegalArgumentException(
             "Unknown or not convertible ProgramElement " + pe + " of type "
                 + pe.getClass());
+    }
+
+    public SmartMLModel getSmartMLInfo() {
+        return smartMLModel;
+    }
+
+    public TheoryInfo getLDTs() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public void addNameProposal(Name name) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public VariableNamer getVariableNamer() {
+        return variableNamer;
+    }
+
+    public Counter getCounter(String nodes) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public SpecificationRepository getSpecificationRepository() {
+        return specificationRepository;
+    }
+
+    public void setProof(Proof proof) {
+        this.proof = proof;
+    }
+
+    public void setNamespaces(NamespaceSet ns) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public Profile getProfile() {
+        throw new RuntimeException("Not implemented yet");
     }
 }

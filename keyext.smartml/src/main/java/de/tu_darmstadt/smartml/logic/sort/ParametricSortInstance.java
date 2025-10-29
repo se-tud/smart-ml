@@ -17,8 +17,8 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
+import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
 import de.tu_darmstadt.smartml.logic.SmartMLDLTheory;
-import de.tu_darmstadt.smartml.rule.inst.SVInstantiations;
 import org.jspecify.annotations.NonNull;
 
 public class ParametricSortInstance extends AbstractSort implements SyntaxElement {

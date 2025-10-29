@@ -28,6 +28,44 @@ formal_sort_param_decl
 const_param_decl: CONST simple_ident COLON sortId ;
 
 
+datatype_decl:
+  doc=DOC_COMMENT?
+  // weigl: all datatypes are free!
+  // FREE?
+  name=simple_ident formal_sort_param_decls?
+  EQUALS
+  datatype_constructor (OR datatype_constructor)*
+  SEMI
+;
+
+
+datatype_constructor:
+  name=simple_ident
+  (
+    LPAREN
+    (argName+=simple_ident COLON argSort+=sortId
+     (COMMA argName+=simple_ident COLON argSort+=sortId)*
+    )?
+    RPAREN
+  )?
+;
+
+sortId
+:
+    id=simple_ident_dots formal_sort_args?
+;
+
+formal_sort_args
+:
+    OPENTYPEPARAMS
+    formal_sort_arg (COMMA formal_sort_arg)*
+    CLOSETYPEPARAMS
+;
+
+formal_sort_arg : sortId | CONST term ;
+
+
+
 one_sort_decl
 :
   doc=DOC_COMMENT?
@@ -41,6 +79,46 @@ one_sort_decl
   )
 ;
 
+primitive_term:
+    termParen
+  | ifThenElseTerm
+  | ifExThenElseTerm
+  | abbreviation
+  | accessterm
+  | literals
+  ;
+
+func_decl
+:
+    doc=DOC_COMMENT?
+    (UNIQUE)?
+    func_name = funcpred_name
+    formal_sort_param_decls?
+	whereToBind=where_to_bind?
+    argSorts = arg_sorts
+    IMP
+    retSort = sortId
+    SEMI
+;
+
+pred_decl
+:
+  doc=DOC_COMMENT?
+  pred_name = funcpred_name
+  formal_sort_param_decls?
+  (whereToBind=where_to_bind)?
+  argSorts=arg_sorts
+  SEMI
+;
+
+accessterm
+:
+  // OLD
+  firstName=simple_ident
+  formal_sort_args?
+  call?
+  ( attribute )*
+;
 
 funcpred_name
    : (name = simple_colon_dots | num = INT_LITERAL)

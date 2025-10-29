@@ -54,7 +54,7 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
     /**
      * a Taclet may replace a Term by another. The new Term is returned.
      *
-     * @return Term being paramter in the rule goal replacewith(Seq)
+     * @return Term being parameter in the rule goal replacewith(Seq)
      */
     public JTerm replaceWith() {
         return replacewith;
@@ -70,14 +70,6 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
         final BoundVarsVisitor bvv = new BoundVarsVisitor();
         bvv.visit(replaceWith());
         return bvv.getBoundVariables().union(super.getBoundVariables());
-    }
-
-    /**
-     * @return Term being paramter in the rule goal replacewith(term)
-     */
-    @Override
-    public Object replaceWithExpressionAsObject() {
-        return replacewith;
     }
 
 

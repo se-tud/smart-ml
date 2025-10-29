@@ -62,7 +62,7 @@ public class NoFindTaclet extends Taclet {
     }
 
     /**
-     * the empty set as a no find taclet has no other entities where variables cann occur bound than
+     * the empty set as a no find taclet has no other entities where variables can occur bound than
      * in the goal templates
      *
      * @return empty set

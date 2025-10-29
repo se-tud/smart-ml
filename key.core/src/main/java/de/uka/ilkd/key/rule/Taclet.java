@@ -165,8 +165,7 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
      */
     public ImmutableSet<QuantifiableVariable> getBoundVariables() {
         if (boundVariables == null) {
-            ImmutableSet<QuantifiableVariable> result =
-                DefaultImmutableSet.nil();
+            ImmutableSet<QuantifiableVariable> result = DefaultImmutableSet.nil();
 
             for (final TacletGoalTemplate tgt : goalTemplates()) {
                 result = result.union(tgt.getBoundVariables());

@@ -62,8 +62,12 @@ public class DefaultImmutableSet<T extends @Nullable Object> implements Immutabl
         this.elementList = elementList;
     }
 
-    public static <T> ImmutableSet<T> fromCollection(Collection<T> seq) {
+    public static <T> ImmutableSet<T> fromSet(Set<T> seq) {
         return new DefaultImmutableSet<>(ImmutableList.fromList(seq));
+    }
+
+    public static <T> ImmutableSet<T> fromCollection(Collection<T> seq) {
+        return fromSet(new LinkedHashSet<>(seq));
     }
 
     // private static HashSet<String> previousComplains = new HashSet<>();
