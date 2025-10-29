@@ -15,9 +15,15 @@ import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.services.Services;
+import de.tu_darmstadt.smartml.strategy.Strategy;
+import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
 public class Goal implements ProofGoal<Goal> {
+    public Goal(Node rootNode, TacletIndex tacletIndex, BuiltInRuleAppIndex builtInRuleAppIndex,
+            Services services) {
+    }
+
     @Override
     public Proof proof() {
         throw new RuntimeException("Not implemented yet");
@@ -77,6 +83,22 @@ public class Goal implements ProofGoal<Goal> {
     }
 
     public ImmutableList<Goal> split(int nrGoals) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public void makeLocalNamespacesFrom(NamespaceSet ns) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public void setGoalStrategy(Strategy<@NonNull Goal> ourStrategy) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public boolean isAutomatic() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public void removeGoalListener(GoalListener listener) {
         throw new RuntimeException("Not implemented yet");
     }
 }

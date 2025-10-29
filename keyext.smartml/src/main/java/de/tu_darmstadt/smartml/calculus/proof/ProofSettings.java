@@ -4,6 +4,7 @@
 package de.tu_darmstadt.smartml.calculus.proof;
 
 import de.tu_darmstadt.smartml.parser.Configuration;
+import de.tu_darmstadt.smartml.strategy.StrategySettings;
 
 public class ProofSettings {
     public static final ProofSettings DEFAULT_SETTINGS = new ProofSettings();
@@ -18,5 +19,9 @@ public class ProofSettings {
 
     public void readSettings(Configuration c) {
 
+    }
+
+    public StrategySettings getStrategySettings() {
+        return null;
     }
 }

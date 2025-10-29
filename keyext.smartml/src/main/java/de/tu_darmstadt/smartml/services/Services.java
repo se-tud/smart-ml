@@ -9,6 +9,7 @@ import org.key_project.logic.Term;
 
 import de.tu_darmstadt.smartml.calculus.proof.Counter;
 import de.tu_darmstadt.smartml.calculus.proof.Proof;
+import de.tu_darmstadt.smartml.calculus.proof.mgt.SpecificationRepository;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.TermBuilder;
 import de.tu_darmstadt.smartml.logic.TermFactory;
@@ -30,7 +31,8 @@ public class Services implements LogicServices {
     private final TermBuilder tb;
     private final SmartMLModel smartMLModel;
     private final VariableNamer variableNamer = new VariableNamer(this);
-    private final Proof proof;
+    private Proof proof;
+    private final SpecificationRepository specificationRepository;
 
 
     public Services() {
@@ -39,6 +41,7 @@ public class Services implements LogicServices {
         tb = new TermBuilder(tf, this);
         smartMLModel = null;
         proof = null;
+        specificationRepository = null;
     }
 
     /// retrieves the namespaces for logic symbols like operators, functions, program variables as
@@ -89,6 +92,22 @@ public class Services implements LogicServices {
     }
 
     public Counter getCounter(String nodes) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public SpecificationRepository getSpecificationRepository() {
+        return specificationRepository;
+    }
+
+    public void setProof(Proof proof) {
+        this.proof = proof;
+    }
+
+    public void setNamespaces(NamespaceSet ns) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public Profile getProfile() {
         throw new RuntimeException("Not implemented yet");
     }
 }
