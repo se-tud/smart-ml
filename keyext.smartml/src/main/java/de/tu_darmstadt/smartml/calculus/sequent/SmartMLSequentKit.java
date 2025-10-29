@@ -1,7 +1,7 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.tu_darmstadt.smartml.proof.calculus;
+package de.tu_darmstadt.smartml.calculus.sequent;
 
 import org.key_project.prover.sequent.Semisequent;
 import org.key_project.prover.sequent.Sequent;
@@ -48,13 +48,13 @@ public class SmartMLSequentKit extends SequentKit {
 
     @Override
     public Semisequent getEmptySemisequent() {
-        return de.tu_darmstadt.smartml.proof.calculus.Semisequent.EMPTY_SEMISEQUENT;
+        return de.tu_darmstadt.smartml.calculus.sequent.Semisequent.EMPTY_SEMISEQUENT;
     }
 
 
     @Override
     public Sequent getEmptySequent() {
-        return de.tu_darmstadt.smartml.proof.calculus.Sequent.EMPTY_SEQUENT;
+        return de.tu_darmstadt.smartml.calculus.sequent.Sequent.EMPTY_SEQUENT;
     }
 
     /// creates a new Sequent
@@ -69,13 +69,13 @@ public class SmartMLSequentKit extends SequentKit {
         if (ante.isEmpty() && succ.isEmpty()) {
             return getEmptySequent();
         }
-        return new de.tu_darmstadt.smartml.proof.calculus.Sequent(ante, succ);
+        return new de.tu_darmstadt.smartml.calculus.sequent.Sequent(ante, succ);
     }
 
     @Override
     protected Semisequent createSemisequent(ImmutableList<SequentFormula> sequentFormulas) {
         return sequentFormulas.isEmpty()
-                ? de.tu_darmstadt.smartml.proof.calculus.Semisequent.EMPTY_SEMISEQUENT
-                : new de.tu_darmstadt.smartml.proof.calculus.Semisequent(sequentFormulas);
+                ? de.tu_darmstadt.smartml.calculus.sequent.Semisequent.EMPTY_SEMISEQUENT
+                : new de.tu_darmstadt.smartml.calculus.sequent.Semisequent(sequentFormulas);
     }
 }

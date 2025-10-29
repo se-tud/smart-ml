@@ -1,7 +1,7 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.tu_darmstadt.smartml.proof.init.io;
+package de.tu_darmstadt.smartml.io.sources;
 
 import java.io.File;
 import java.io.FileInputStream;

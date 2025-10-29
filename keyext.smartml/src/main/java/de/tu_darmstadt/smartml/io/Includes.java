@@ -1,7 +1,7 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.tu_darmstadt.smartml.proof.init;
+package de.tu_darmstadt.smartml.io;
 
 import java.io.File;
 import java.util.Collection;
@@ -10,7 +10,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import de.tu_darmstadt.smartml.proof.init.io.RuleSource;
+import de.tu_darmstadt.smartml.io.sources.RuleSource;
 
 /// Encapsulates 2 lists (one for LDT-include, one for "normal" includes) containing the filenames
 /// parsed in the include-section of a <code>KeYFile</code>. <code>name2Source</code> maps the

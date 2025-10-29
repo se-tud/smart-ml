@@ -1,7 +1,7 @@
 /* This file is part of KeY - https://key-project.org
  * KeY is licensed under the GNU General Public License Version 2
  * SPDX-License-Identifier: GPL-2.0-only */
-package de.tu_darmstadt.smartml.proof.calculus;
+package de.tu_darmstadt.smartml.calculus.sequent;
 
 import java.util.Iterator;
 
@@ -16,7 +16,7 @@ import org.jspecify.annotations.NonNull;
 /// Outside of this package only the supertype must be used.
 class Sequent extends org.key_project.prover.sequent.Sequent {
     static final org.key_project.prover.sequent.Sequent EMPTY_SEQUENT =
-        new Sequent(de.tu_darmstadt.smartml.proof.calculus.Semisequent.EMPTY_SEMISEQUENT) {
+        new Sequent(de.tu_darmstadt.smartml.calculus.sequent.Semisequent.EMPTY_SEMISEQUENT) {
             @Override
             protected org.key_project.prover.sequent.Sequent getEmptySequent() {
                 return this;
@@ -33,8 +33,8 @@ class Sequent extends org.key_project.prover.sequent.Sequent {
             @Override
             protected Semisequent createSemisequent(ImmutableList<SequentFormula> formulas) {
                 return formulas.isEmpty()
-                        ? de.tu_darmstadt.smartml.proof.calculus.Semisequent.EMPTY_SEMISEQUENT
-                        : new de.tu_darmstadt.smartml.proof.calculus.Semisequent(formulas);
+                        ? de.tu_darmstadt.smartml.calculus.sequent.Semisequent.EMPTY_SEMISEQUENT
+                        : new de.tu_darmstadt.smartml.calculus.sequent.Semisequent(formulas);
             }
 
             @Override
@@ -72,8 +72,8 @@ class Sequent extends org.key_project.prover.sequent.Sequent {
 
     protected Semisequent createSemisequent(final ImmutableList<SequentFormula> formulas) {
         return formulas.isEmpty()
-                ? de.tu_darmstadt.smartml.proof.calculus.Semisequent.EMPTY_SEMISEQUENT
-                : new de.tu_darmstadt.smartml.proof.calculus.Semisequent(formulas);
+                ? de.tu_darmstadt.smartml.calculus.sequent.Semisequent.EMPTY_SEMISEQUENT
+                : new de.tu_darmstadt.smartml.calculus.sequent.Semisequent(formulas);
     }
 
 }

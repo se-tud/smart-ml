@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.tu_darmstadt.smartml.parser.builder.ChoiceFinder;
-import de.tu_darmstadt.smartml.proof.init.io.RuleSource;
+import de.tu_darmstadt.smartml.io.sources.RuleSource;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CodePointCharStream;
