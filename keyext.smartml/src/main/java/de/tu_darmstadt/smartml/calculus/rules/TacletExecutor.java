@@ -20,8 +20,6 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
-import de.tu_darmstadt.smartml.calculus.naming.RenamingTable;
-import de.tu_darmstadt.smartml.calculus.naming.VariableNamer;
 import de.tu_darmstadt.smartml.calculus.proof.Goal;
 import de.tu_darmstadt.smartml.calculus.proof.Node;
 import de.tu_darmstadt.smartml.calculus.rules.execution.ProgVarReplacer;
@@ -32,6 +30,8 @@ import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
 import de.tu_darmstadt.smartml.calculus.rules.taclets.TacletSchemaVariableCollector;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.services.Services;
+import de.tu_darmstadt.smartml.services.naming.RenamingTable;
+import de.tu_darmstadt.smartml.services.naming.VariableNamer;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 public abstract class TacletExecutor extends

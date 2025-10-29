@@ -13,11 +13,11 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
-import de.tu_darmstadt.smartml.calculus.naming.NameRecorder;
-import de.tu_darmstadt.smartml.calculus.naming.RenamingTable;
 import de.tu_darmstadt.smartml.calculus.rules.NoPosTacletApp;
 import de.tu_darmstadt.smartml.calculus.sequent.SmartMLSequentKit;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
+import de.tu_darmstadt.smartml.services.naming.NameRecorder;
+import de.tu_darmstadt.smartml.services.naming.RenamingTable;
 import org.jspecify.annotations.Nullable;
 
 public class Node implements Iterable<Node> {

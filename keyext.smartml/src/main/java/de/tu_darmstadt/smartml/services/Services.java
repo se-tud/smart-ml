@@ -9,13 +9,13 @@ import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 
-import de.tu_darmstadt.smartml.calculus.naming.VariableNamer;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.TermBuilder;
 import de.tu_darmstadt.smartml.logic.TermFactory;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.program.SmartMLModel;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.services.naming.VariableNamer;
 import de.tu_darmstadt.smartml.theory.TheoryInfo;
 
 /// Service class providing access to
