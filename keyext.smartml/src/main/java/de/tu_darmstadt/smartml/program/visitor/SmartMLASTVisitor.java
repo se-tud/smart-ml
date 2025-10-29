@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.visitor;
 
+import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.program.Program;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import de.tu_darmstadt.smartml.program.expr.*;
@@ -72,4 +73,8 @@ public abstract class SmartMLASTVisitor extends SmartMLASTWalker implements Visi
 
     @Override
     public void performActionOnUnaryNot(UnaryNot x) { doDefaultAction(x); }
+
+    @Override
+    public void performActionOnProgramVariable(ProgramVariable x) { doDefaultAction(x); }
+
 }

@@ -59,6 +59,6 @@ public class ProgramVariable extends AbstractSortedOperator
 
     @Override
     public void visit(Visitor v) {
-        v.performActionOnProgramVariable(v);
+        v.performActionOnProgramVariable(this);
     }
 }

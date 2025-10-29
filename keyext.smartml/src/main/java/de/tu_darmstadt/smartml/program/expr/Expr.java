@@ -4,6 +4,11 @@
 package de.tu_darmstadt.smartml.program.expr;
 
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.program.abstraction.Type;
+import de.tu_darmstadt.smartml.services.Services;
 
 public interface Expr extends SmartMLProgramElement {
+    default Type type(Services services) {
+        throw new RuntimeException("Not implemented yet");
+    }
 }

@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program.visitor;
 
+import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.program.Program;
 import de.tu_darmstadt.smartml.program.expr.*;
 import de.tu_darmstadt.smartml.program.stmt.*;
@@ -33,5 +34,5 @@ public interface Visitor {
 
     void performActionOnUnaryNot(UnaryNot x);
 
-    void performActionOnProgramVariable(Visitor v);
+    void performActionOnProgramVariable(ProgramVariable x);
 }

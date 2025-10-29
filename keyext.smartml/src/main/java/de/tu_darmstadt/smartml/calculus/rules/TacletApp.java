@@ -7,11 +7,13 @@ import org.key_project.logic.Namespace;
 import org.key_project.logic.op.Function;
 import org.key_project.prover.rules.Rule;
 import org.key_project.prover.rules.RuleApp;
+import org.key_project.prover.rules.Taclet;
 import org.key_project.prover.rules.instantiation.AssumesFormulaInstantiation;
 import org.key_project.prover.sequent.PosInOccurrence;
 import org.key_project.util.collection.ImmutableList;
 
 import de.tu_darmstadt.smartml.calculus.rules.matching.inst.MatchConditions;
+import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
@@ -47,6 +49,14 @@ public class TacletApp implements RuleApp {
     }
 
     public ImmutableList<? extends AssumesFormulaInstantiation> assumesFormulaInstantiations() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public SVInstantiations instantiations() {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public Taclet taclet() {
         throw new RuntimeException("Not implemented yet");
     }
 }

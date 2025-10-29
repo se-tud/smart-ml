@@ -10,6 +10,9 @@ import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import de.tu_darmstadt.smartml.services.Services;
 
 public abstract class ProgramSVSort extends SortImpl {
+
+    public static final ProgramSVSort VARIABLE = null;
+
     public ProgramSVSort(Name name) {
         super(name);
     }

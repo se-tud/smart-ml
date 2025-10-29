@@ -9,6 +9,9 @@ import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 public abstract class SmartMLASTWalker {
     protected final SmartMLProgramElement root;
 
+    /// the current visited level
+    private int depth = -1;
+
     protected SmartMLASTWalker(SmartMLProgramElement root) {
         this.root = root;
     }
@@ -18,13 +21,20 @@ public abstract class SmartMLASTWalker {
         walk(root);
     }
 
+    /// returns the current visited level
+    public int depth() {
+        return depth;
+    }
+
     /** Depth-left-first: descend into children, then call doAction(node). */
     protected void walk(SmartMLProgramElement node) {
         final int n = node.getChildCount();
+        depth++;
         for (int i = 0; i < n; i++) {
             var child = (SmartMLProgramElement) node.getChild(i);
             walk(child);
         }
+        depth--;
         doAction(node);
     }
 
