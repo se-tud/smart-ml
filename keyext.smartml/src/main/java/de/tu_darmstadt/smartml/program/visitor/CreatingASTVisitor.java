@@ -5,6 +5,8 @@ package de.tu_darmstadt.smartml.program.visitor;
 
 import java.util.*;
 
+import de.tu_darmstadt.smartml.program.VarTarget;
+import de.tu_darmstadt.smartml.program.decl.Decl;
 import org.key_project.util.ExtList;
 import org.key_project.util.collection.ImmutableArray;
 
@@ -68,20 +70,19 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
 
     @Override
     public void performActionOnProgram(Program x) {
-        ExtList changeList = getTop();
-        if (!changeList.isEmpty() && changeList.getFirst() == CHANGED) {
-            changeList.removeFirst();
-            if (!preservesPositionInfo) {
-                // changeList.removeFirstOccurrence(PositionInfo.class);
-            }
+        ExtList cl = getTop();
+        if (!cl.isEmpty() && cl.getFirst() == CHANGED) {
+            cl.removeFirst();
             @SuppressWarnings("unchecked")
-            List<Stmt> stmts = new ArrayList<>(Arrays.asList(changeList.collect(Stmt.class)));
-            addChild(new Program(stmts));
+            java.util.List<de.tu_darmstadt.smartml.program.decl.Decl> ds =
+                    new java.util.ArrayList<>(java.util.Arrays.asList(cl.collect(de.tu_darmstadt.smartml.program.decl.Decl.class)));
+            addChild(new Program(ds));
             changed();
         } else {
             doDefaultAction(x);
         }
     }
+
 
     /* ===================== Statements ===================== */
 
@@ -107,8 +108,9 @@ public abstract class CreatingASTVisitor extends SmartMLASTVisitor {
         DefaultAction def = new DefaultAction(x) {
             @Override
             SmartMLProgramElement createNewElement(ExtList changeList) {
+                VarTarget lhs = changeList.get(VarTarget.class);
                 Expr rhs = changeList.get(Expr.class);
-                return new Assign(x.name(), rhs);
+                return new Assign(lhs, rhs);
             }
         };
         def.doAction(x);

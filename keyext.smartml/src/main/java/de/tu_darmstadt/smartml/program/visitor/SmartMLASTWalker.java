@@ -18,12 +18,10 @@ public abstract class SmartMLASTWalker {
         walk(root);
     }
 
-    /** Depth-left-first: descend into children, then call doAction(node). */
     protected void walk(SmartMLProgramElement node) {
-        final int n = node.getChildCount();
-        for (int i = 0; i < n; i++) {
-            var child = (SmartMLProgramElement) node.getChild(i);
-            walk(child);
+        if (node == null) return;
+        for (int i = 0; i < node.getChildCount(); i++) {
+            walk((SmartMLProgramElement) node.getChild(i));
         }
         doAction(node);
     }

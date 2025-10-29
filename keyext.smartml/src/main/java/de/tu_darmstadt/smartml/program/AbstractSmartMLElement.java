@@ -12,7 +12,7 @@ import java.util.List;
  * Common base class for SmartML AST nodes.
  */
 public abstract class AbstractSmartMLElement implements SmartMLProgramElement {
-    private final List<SmartMLProgramElement> children;
+    private final List<? extends SmartMLProgramElement> children;
 
     protected AbstractSmartMLElement(List<? extends SmartMLProgramElement> children) {
         this.children = new ArrayList<>(children);
@@ -28,7 +28,7 @@ public abstract class AbstractSmartMLElement implements SmartMLProgramElement {
         return children.size();
     }
 
-    public List<SmartMLProgramElement> children() { return children; }
+    public List<? extends SmartMLProgramElement> children() { return children; }
 
     public List<SmartMLProgramElement> getChildren() {
         return Collections.unmodifiableList(children);
