@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.services;
 
+import de.uka.ilkd.key.proof.Counter;
+
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
@@ -81,5 +83,9 @@ public class Services implements LogicServices {
 
     public VariableNamer getVariableNamer() {
         return variableNamer;
+    }
+
+    public Counter getCounter(String nodes) {
+        throw new RuntimeException("Not implemented yet");
     }
 }

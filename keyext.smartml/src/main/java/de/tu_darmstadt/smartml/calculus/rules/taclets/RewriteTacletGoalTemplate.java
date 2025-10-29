@@ -12,6 +12,7 @@ import org.key_project.util.collection.ImmutableSLList;
 import org.key_project.util.collection.ImmutableSet;
 
 import de.tu_darmstadt.smartml.calculus.sequent.SmartMLSequentKit;
+import org.jspecify.annotations.NonNull;
 
 public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
     /// term that replaces another one
@@ -37,11 +38,9 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
         this(addedSeq, addedRules, replacewith, DefaultImmutableSet.nil());
     }
 
-
     public RewriteTacletGoalTemplate(Term replacewith) {
         this(SmartMLSequentKit.getInstance().getEmptySequent(), ImmutableSLList.nil(), replacewith);
     }
-
 
     /// a Taclet may replace a Term by another. The new Term is returned.
     ///
@@ -75,7 +74,7 @@ public class RewriteTacletGoalTemplate extends TacletGoalTemplate {
 
     /// toString
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         String result = super.toString();
         result += "\\replacewith(" + replaceWith() + ") ";
         return result;

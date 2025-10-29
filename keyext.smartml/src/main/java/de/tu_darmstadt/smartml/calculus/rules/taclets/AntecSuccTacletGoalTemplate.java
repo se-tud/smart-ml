@@ -11,6 +11,7 @@ import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSet;
 
 import de.tu_darmstadt.smartml.calculus.sequent.SmartMLSequentKit;
+import org.jspecify.annotations.NonNull;
 
 public class AntecSuccTacletGoalTemplate extends TacletGoalTemplate {
     /// sequent that replaces another one
@@ -43,7 +44,7 @@ public class AntecSuccTacletGoalTemplate extends TacletGoalTemplate {
 
     /// toString
     @Override
-    public String toString() {
+    public @NonNull String toString() {
         String result = super.toString();
         result += "\\replacewith(" + replaceWith() + ") ";
         return result;
