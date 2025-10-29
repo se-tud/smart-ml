@@ -28,6 +28,13 @@ import org.jspecify.annotations.NonNull;
 
 public abstract class SMLTaclet extends Taclet {
 
+    /// Integer to cache the hashcode
+    private int hashcode = 0;
+
+    /* TODO: find better solution */
+    private final boolean surviveSymbExec;
+
+
 
     /// creates a Taclet (originally known as Schematic Theory Specific Rules)
     ///
@@ -45,9 +52,10 @@ public abstract class SMLTaclet extends Taclet {
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap, ChoiceExpr choices,
-            ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            boolean surviveSmbExec, ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
             tacletAnnotations);
+        this.surviveSymbExec = surviveSmbExec;
     }
 
     @EnsuresNonNull("matcher")
@@ -111,4 +119,9 @@ public abstract class SMLTaclet extends Taclet {
     public Taclet setName(String name) {
         return null;
     }
+
+    public boolean getSurviveSymbExec() {
+        return surviveSymbExec;
+    }
+
 }

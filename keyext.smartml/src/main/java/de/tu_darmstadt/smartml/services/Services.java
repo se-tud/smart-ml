@@ -4,8 +4,10 @@
 package de.tu_darmstadt.smartml.services;
 
 import org.key_project.logic.LogicServices;
+import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 
+import de.tu_darmstadt.smartml.calculus.naming.VariableNamer;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.TermBuilder;
 import de.tu_darmstadt.smartml.logic.TermFactory;
@@ -25,6 +27,7 @@ public class Services implements LogicServices {
     private final TermFactory tf;
     private final TermBuilder tb;
     private final SmartMLModel smartMLModel;
+    private final VariableNamer variableNamer = new VariableNamer(this);;
 
     public Services() {
         namespaces = new NamespaceSet();
@@ -70,5 +73,13 @@ public class Services implements LogicServices {
 
     public TheoryInfo getLDTs() {
         throw new RuntimeException("Not implemented yet");
+    }
+
+    public void addNameProposal(Name name) {
+        throw new RuntimeException("Not implemented yet");
+    }
+
+    public VariableNamer getVariableNamer() {
+        return variableNamer;
     }
 }

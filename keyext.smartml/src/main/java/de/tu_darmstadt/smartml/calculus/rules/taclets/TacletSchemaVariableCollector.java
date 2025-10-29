@@ -20,7 +20,9 @@ import org.key_project.util.collection.ImmutableList;
 
 public class TacletSchemaVariableCollector implements TacletVisitor {
 
+
     private final Set<SchemaVariable> collectedSchemaVariables = new LinkedHashSet<>();
+
 
     @Override
     public void visitFind(Term findTerm) {
@@ -39,7 +41,8 @@ public class TacletSchemaVariableCollector implements TacletVisitor {
     }
 
     @Override
-    public void visitGoalTemplates(ImmutableList<TacletGoalTemplate> goalTemplates) {
+    public void visitGoalTemplates(ImmutableList<TacletGoalTemplate> goalTemplates,
+            boolean visitAddRules) {
         for (final TacletGoalTemplate tgt : goalTemplates) {
             collectedSchemaVariables.addAll(tgt.addedProgVars().toSet());
             for (final QuantifiableVariable qvar : tgt.getBoundVariables()) {
@@ -55,8 +58,10 @@ public class TacletSchemaVariableCollector implements TacletVisitor {
             // add-part of goals
             visitSequent(tgt.sequent());
 
-            for (final Taclet addedRule : tgt.rules()) {
-                visit(addedRule);
+            if (visitAddRules) {
+                for (final Taclet addedRule : tgt.rules()) {
+                    visit(addedRule);
+                }
             }
         }
     }

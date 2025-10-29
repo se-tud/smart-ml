@@ -14,15 +14,20 @@ import org.key_project.util.collection.ImmutableList;
 
 public interface TacletVisitor {
     /// visits all parts of the provided taclet: assumes, find, variable conditions, goal templates,
-    /// rulesets
-    /// and triggers
+    /// rulesets and triggers but does not descend into the rules added by taclet goal templates
     default void visit(Taclet taclet) {
+        visit(taclet, false);
+    }
+
+    /// visits all parts of the provided taclet: assumes, find, variable conditions, goal templates,
+    /// rulesets and triggers
+    default void visit(Taclet taclet, boolean visitAddRules) {
         visitAssumes(taclet.assumesSequent());
         if (taclet instanceof SMLFindTaclet findTaclet) {
             visitFind(findTaclet.find());
         }
         visitVariableConditions(taclet.getVariableConditions());
-        visitGoalTemplates(taclet.goalTemplates());
+        visitGoalTemplates(taclet.goalTemplates(), visitAddRules);
         visitRuleSets(taclet.getRuleSets());
         visitTrigger(taclet.getTrigger());
     }
@@ -38,7 +43,8 @@ public interface TacletVisitor {
             ImmutableList<? extends VariableCondition> variableConditions) {
     }
 
-    default void visitGoalTemplates(ImmutableList<TacletGoalTemplate> goalTemplates) {
+    default void visitGoalTemplates(ImmutableList<TacletGoalTemplate> goalTemplates,
+            boolean visitAddRules) {
     }
 
     default void visitAssumes(Sequent assumes) {

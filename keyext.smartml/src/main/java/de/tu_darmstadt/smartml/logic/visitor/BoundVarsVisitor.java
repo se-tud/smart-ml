@@ -3,18 +3,19 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.logic.visitor;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.key_project.logic.Term;
 import org.key_project.logic.Visitor;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.prover.sequent.Sequent;
+import org.key_project.prover.sequent.SequentFormula;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableSet;
 
 public class BoundVarsVisitor implements Visitor<Term> {
-    private Set<QuantifiableVariable> bdVars = new HashSet<>();
+    private Set<QuantifiableVariable> bdVars = new LinkedHashSet<>();
 
     @Override
     public void visit(Term visited) {
@@ -28,14 +29,14 @@ public class BoundVarsVisitor implements Visitor<Term> {
 
     /// visits a sequent
     public void visit(Sequent visited) {
-        for (var sf : visited) {
+        for (final SequentFormula sf : visited) {
             visit(sf.formula());
         }
     }
 
     /// returns all the bound variables that have been stored
     public ImmutableSet<QuantifiableVariable> getBoundVariables() {
-        return DefaultImmutableSet.fromCollection(bdVars);
+        return DefaultImmutableSet.fromSet(bdVars);
     }
 
 }

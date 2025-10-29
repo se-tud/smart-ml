@@ -9,7 +9,7 @@ import org.key_project.logic.op.sv.SchemaVariable;
 import org.key_project.util.collection.ImmutableList;
 import org.key_project.util.collection.ImmutableSLList;
 
-import de.tu_darmstadt.smartml.rule.inst.SVInstantiations;
+import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
 import de.tu_darmstadt.smartml.services.Services;
 
 public interface GenericArgument extends SyntaxElement {

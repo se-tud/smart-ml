@@ -42,12 +42,13 @@ public abstract class SMLFindTaclet extends SMLTaclet {
     /// or recursive use of the Taclet.
     @EnsuresNonNull({ "matcher", "executor" })
     protected SMLFindTaclet(Name name, SyntaxElement find, TacletApplPart applPart,
-            ImmutableList<TacletGoalTemplate> goalTemplates,
-            ImmutableList<RuleSet> ruleSets,
+            ImmutableList<TacletGoalTemplate> goalTemplates, ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap, ChoiceExpr choices,
+            boolean surviveSymExec,
             ImmutableSet<TacletAnnotation> tacletAnnotations) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
+            surviveSymExec,
             tacletAnnotations);
     }
 
