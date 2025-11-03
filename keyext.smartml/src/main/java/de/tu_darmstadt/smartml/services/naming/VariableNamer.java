@@ -32,6 +32,9 @@ import de.tu_darmstadt.smartml.program.abstraction.Type;
 import de.tu_darmstadt.smartml.program.expr.Expr;
 import de.tu_darmstadt.smartml.program.stmt.Block;
 import de.tu_darmstadt.smartml.program.stmt.EmptyStatement;
+import de.tu_darmstadt.smartml.program.type.PrimitiveType;
+import de.tu_darmstadt.smartml.program.type.SchemaType;
+import de.tu_darmstadt.smartml.program.type.SmartType;
 import de.tu_darmstadt.smartml.program.visitor.SmartMLASTVisitor;
 import de.tu_darmstadt.smartml.services.Services;
 import org.jspecify.annotations.Nullable;
@@ -260,6 +263,21 @@ public class VariableNamer {
 
             @Override
             protected void doDefaultAction(SmartMLProgramElement node) {
+
+            }
+
+            @Override
+            public void performActionOnSmartType(SmartType x) {
+
+            }
+
+            @Override
+            public void performActionOnPrimitiveType(PrimitiveType x) {
+
+            }
+
+            @Override
+            public void performActionOnSchemaType(SchemaType x) {
 
             }
         }

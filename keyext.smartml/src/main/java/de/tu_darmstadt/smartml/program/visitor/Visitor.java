@@ -13,47 +13,74 @@ import de.tu_darmstadt.smartml.program.type.*;
 public interface Visitor {
     // top-level
     void performActionOnProgram(Program x);
+
     void performActionOnBlock(Block x);
+
     void performActionOnVarTarget(VarTarget x);
 
     // declarations
     void performActionOnFunctionDecl(FunctionDecl x);
+
     void performActionOnDatatypeDecl(DatatypeDecl x);
+
     void performActionOnExceptionDecl(ExceptionDecl x);
+
     void performActionOnResourceDecl(ResourceDecl x);
+
     void performActionOnInterfaceDecl(InterfaceDecl x);
+
     void performActionOnContractDecl(ContractDecl x);
 
     // statements
     void performActionOnAssign(Assign x);
+
     void performActionOnIf(If x);
+
     void performActionOnWhile(While x);
+
     void performActionOnReturn(Return x);
+
     void performActionOnLet(Let x);
+
     void performActionOnCallStmt(CallStmt x);
+
     void performActionOnEmptyStatement(EmptyStatement x);
+
     void performActionOnTryCatch(TryCatch x);
+
     void performActionOnTransaction(Transaction x);
+
     void performActionOnAssertError(AssertError x);
+
     void performActionOnExpressionStatement(ExpressionStatement x);
 
     // expressions
     void performActionOnVar(Var x);
+
     void performActionOnIntLit(IntLit x);
+
     void performActionOnBoolLit(BoolLit x);
+
     void performActionOnBinary(Binary x);
+
     void performActionOnUnaryNot(UnaryNot x);
+
     void performActionOnQualifiedAccess(QualifiedAccess x);
+
     void performActionOnUnaryNeg(UnaryNeg x);
 
     // literals & names
     void performActionOnStringLit(StringLit x);
+
     void performActionOnAddressLit(AddressLit x);
+
     void performActionOnThisExpr(ThisExpr x);
 
     // types
     void performActionOnSmartType(SmartType x);
+
     void performActionOnPrimitiveType(PrimitiveType x);
+
     void performActionOnSchemaType(SchemaType x);
 
 

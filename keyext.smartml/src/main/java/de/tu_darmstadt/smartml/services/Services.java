@@ -8,6 +8,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.Term;
 
 import de.tu_darmstadt.smartml.calculus.proof.Counter;
+import de.tu_darmstadt.smartml.calculus.proof.Node;
 import de.tu_darmstadt.smartml.calculus.proof.Proof;
 import de.tu_darmstadt.smartml.calculus.proof.mgt.SpecificationRepository;
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
@@ -109,5 +110,13 @@ public class Services implements LogicServices {
 
     public Profile getProfile() {
         throw new RuntimeException("Not implemented yet");
+    }
+
+    public Services getOverlay(NamespaceSet localNamespaces) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    public void saveNameRecorder(Node n) {
+        throw new RuntimeException("Not implemented");
     }
 }

@@ -62,6 +62,11 @@ public final class LoggingVisitor extends SmartMLASTVisitor {
     public void performActionOnUnaryNot(UnaryNot x) { mark("Not"); }
 
     @Override
+    public void performActionOnUnaryNeg(UnaryNeg x) {
+        mark("UnaryMinus");
+    }
+
+    @Override
     public void performActionOnStringLit(StringLit x) { mark("String(" + x.value() + ")"); }
 
     @Override

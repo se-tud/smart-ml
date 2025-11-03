@@ -59,6 +59,8 @@ public class ProgramVariable extends AbstractSortedOperator
 
     @Override
     public void visit(Visitor v) {
-        v.performActionOnProgramVariable(this);
+        // v.performActionOnProgramVariable(this);
+        throw new RuntimeException(
+            "Program variables in SmartML representation requires clarification");
     }
 }

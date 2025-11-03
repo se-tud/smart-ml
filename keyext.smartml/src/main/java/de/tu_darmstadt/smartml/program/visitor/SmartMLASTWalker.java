@@ -8,6 +8,8 @@ import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 /** Minimal DFS walker like Rusty's RustyASTWalker. */
 public abstract class SmartMLASTWalker {
     protected final SmartMLProgramElement root;
+    /// the current visited level
+    private int depth = -1;
 
     protected SmartMLASTWalker(SmartMLProgramElement root) {
         this.root = root;
@@ -21,11 +23,19 @@ public abstract class SmartMLASTWalker {
     protected void walk(SmartMLProgramElement node) {
         if (node == null)
             return;
+        depth++;
         for (int i = 0; i < node.getChildCount(); i++) {
             walk((SmartMLProgramElement) node.getChild(i));
         }
+        depth--;
         doAction(node);
     }
+
+    /// returns the current visited level
+    public int depth() {
+        return depth;
+    }
+
 
     /** Called just before leaving the node the last time. */
     protected abstract void doAction(SmartMLProgramElement node);
