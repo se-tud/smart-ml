@@ -31,6 +31,9 @@ public interface Visitor {
 
     void performActionOnContractDecl(ContractDecl x);
 
+    void performActionOnConstructorDecl(ConstructorDecl constructorDecl);
+
+
     // statements
     void performActionOnAssign(Assign x);
 
@@ -82,7 +85,6 @@ public interface Visitor {
     void performActionOnPrimitiveType(PrimitiveType x);
 
     void performActionOnSchemaType(SchemaType x);
-
 
 
 }

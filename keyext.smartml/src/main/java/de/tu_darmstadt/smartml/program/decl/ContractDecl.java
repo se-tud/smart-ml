@@ -11,32 +11,37 @@ import de.tu_darmstadt.smartml.program.visitor.Visitor;
 
 public final class ContractDecl extends AbstractSmartMLElement implements Decl {
     private final String name;
-    private final List<? extends SmartMLProgramElement> stateMembers;
+    private final List<? extends SmartMLProgramElement> state;
     private final List<? extends SmartMLProgramElement> members;
     private final List<? extends SmartMLProgramElement> invariants;
 
     public ContractDecl(String name,
-            List<? extends SmartMLProgramElement> stateMembers,
-            List<? extends SmartMLProgramElement> members,
-            List<? extends SmartMLProgramElement> invariants) {
-        super(concat(stateMembers, concat(members, invariants)));
+                        List<? extends SmartMLProgramElement> state,
+                        List<? extends SmartMLProgramElement> members,
+                        List<? extends SmartMLProgramElement> invariants) {
+        super(concat(state, members, invariants));   // <<< important
         this.name = name;
-        this.stateMembers = List.copyOf(stateMembers);
+        this.state = List.copyOf(state);
         this.members = List.copyOf(members);
         this.invariants = List.copyOf(invariants);
     }
 
     public String name() { return name; }
 
-    @Override
-    public void visit(Visitor v) { v.performActionOnContractDecl(this); }
-
     private static List<? extends SmartMLProgramElement> concat(
             List<? extends SmartMLProgramElement> a,
-            List<? extends SmartMLProgramElement> b) {
-        var out = new java.util.ArrayList<SmartMLProgramElement>(a.size() + b.size());
-        out.addAll(a);
-        out.addAll(b);
+            List<? extends SmartMLProgramElement> b,
+            List<? extends SmartMLProgramElement> c) {
+        var out = new java.util.ArrayList<SmartMLProgramElement>(a.size()+b.size()+c.size());
+        out.addAll(a); out.addAll(b); out.addAll(c);
         return out;
     }
+
+    @Override
+    public void visit(Visitor v) { v.performActionOnContractDecl(this);    }
+
+    public List<? extends SmartMLProgramElement> state() { return state; }
+    public List<? extends SmartMLProgramElement> members() { return members; }
+    public List<? extends SmartMLProgramElement> invariants() { return invariants; }
 }
+

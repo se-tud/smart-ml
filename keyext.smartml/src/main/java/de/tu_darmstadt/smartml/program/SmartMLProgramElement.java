@@ -32,4 +32,7 @@ public interface SmartMLProgramElement extends SyntaxElement {
     }
 
     void visit(Visitor v);
+
+    default String pretty() { return new PrettyPrinter().print(this); }
+
 }

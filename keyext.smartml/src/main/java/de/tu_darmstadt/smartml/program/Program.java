@@ -20,6 +20,6 @@ public final class Program extends AbstractSmartMLElement implements SmartMLProg
     @Override
     public void visit(Visitor v) { v.performActionOnProgram(this); }
 
-    @Override
-    public String toString() { return "Program" + decls; }
+    @Override public String toString() { return new PrettyPrinter().print(this); }
+
 }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import de.tu_darmstadt.smartml.program.decl.ConstructorDecl;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Term;
@@ -263,6 +264,11 @@ public class VariableNamer {
 
             @Override
             protected void doDefaultAction(SmartMLProgramElement node) {
+
+            }
+
+            @Override
+            public void performActionOnConstructorDecl(ConstructorDecl constructorDecl) {
 
             }
 

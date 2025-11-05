@@ -4,6 +4,7 @@
 package de.tu_darmstadt.smartml.program.visitor;
 
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
+import de.tu_darmstadt.smartml.program.decl.ConstructorDecl;
 import de.tu_darmstadt.smartml.program.expr.*;
 import de.tu_darmstadt.smartml.program.stmt.*;
 import de.tu_darmstadt.smartml.program.type.PrimitiveType;
@@ -35,6 +36,11 @@ public final class LoggingVisitor extends SmartMLASTVisitor {
     // statements
     @Override
     public void performActionOnBlock(Block x) { mark("Block"); }
+
+    @Override
+    public void performActionOnConstructorDecl(ConstructorDecl constructorDecl) {
+        mark("ConstructorDecl");
+    }
 
     @Override
     public void performActionOnIf(If x) { mark("If"); }
