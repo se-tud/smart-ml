@@ -6,6 +6,8 @@ package de.tu_darmstadt.smartml.services;
 import org.key_project.logic.LogicServices;
 import org.key_project.logic.Name;
 import org.key_project.logic.Term;
+import org.key_project.prover.proof.ProofServices;
+import org.key_project.prover.proof.SessionCaches;
 
 import de.tu_darmstadt.smartml.calculus.proof.Counter;
 import de.tu_darmstadt.smartml.calculus.proof.Node;
@@ -25,7 +27,7 @@ import de.tu_darmstadt.smartml.theory.TheoryInfo;
 /// * program model
 /// * creators (see [TermFactory] and [TermBuilder])
 /// * theories/LDTs
-public class Services implements LogicServices {
+public class Services implements LogicServices, ProofServices {
 
     private final NamespaceSet namespaces;
     private final TermFactory tf;
@@ -117,6 +119,11 @@ public class Services implements LogicServices {
     }
 
     public void saveNameRecorder(Node n) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public SessionCaches getCaches() {
         throw new RuntimeException("Not implemented");
     }
 }

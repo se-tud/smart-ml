@@ -8,6 +8,10 @@ import org.key_project.prover.rules.instantiation.SVInstantiations;
 
 public class MatchConditions extends MatchResultInfo {
 
+    public static final MatchConditions EMPTY_MATCHCONDITIONS =
+        new MatchConditions(
+            de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations.EMPTY_SVINSTANTIATIONS);
+
     public MatchConditions(SVInstantiations pInstantiations) {
         super(pInstantiations);
     }
