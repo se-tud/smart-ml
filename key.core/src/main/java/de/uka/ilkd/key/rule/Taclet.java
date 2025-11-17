@@ -535,7 +535,7 @@ public abstract class Taclet extends org.key_project.prover.rules.Taclet impleme
         this.origin = origin;
     }
 
-    StringBuffer toStringAttribs(StringBuffer sb) {
+    public StringBuffer toStringAttribs(StringBuffer sb) {
         // if (noninteractive()) sb = sb.append(" \\noninteractive");
         sb.append("\nChoices: ").append(choices);
         return sb;

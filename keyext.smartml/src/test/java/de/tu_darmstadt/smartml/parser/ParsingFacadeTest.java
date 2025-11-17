@@ -128,8 +128,6 @@ class ParsingFacadeTest {
         assertTrue(block.getChildCount() == 0);
     }
 
-
-
     @Test
     void parseSimpleAssignmentFormula() {
         KeYIO io = new KeYIO(services);

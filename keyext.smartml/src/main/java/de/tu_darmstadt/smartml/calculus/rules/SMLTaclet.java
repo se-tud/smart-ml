@@ -8,12 +8,7 @@ import org.key_project.logic.Name;
 import org.key_project.logic.SyntaxElement;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.logic.op.sv.SchemaVariable;
-import org.key_project.prover.rules.RuleSet;
-import org.key_project.prover.rules.Taclet;
-import org.key_project.prover.rules.TacletAnnotation;
-import org.key_project.prover.rules.TacletApplPart;
-import org.key_project.prover.rules.TacletAttributes;
-import org.key_project.prover.rules.TacletPrefix;
+import org.key_project.prover.rules.*;
 import org.key_project.prover.rules.tacletbuilder.TacletGoalTemplate;
 import org.key_project.util.collection.DefaultImmutableSet;
 import org.key_project.util.collection.ImmutableList;
@@ -26,15 +21,55 @@ import de.tu_darmstadt.smartml.logic.visitor.BoundVarsVisitor;
 import org.checkerframework.checker.nullness.qual.EnsuresNonNull;
 import org.jspecify.annotations.NonNull;
 
-public abstract class SMLTaclet extends Taclet {
+/// Taclets are the DL-extension of schematic theory specific rules. They are used to describe rules
+/// of a logic (sequent) calculus. A typical taclet definition looks similar to
+///
+/// <code>
+/// taclet_name { if ( ... ) find ( ... ) goal_descriptions }
+/// </code>
+///
+/// where the if-part must and the find-part can contain a sequent arrow, that indicates, if a term
+/// has to occur at the top level and if so, on which side of the sequent. The goal descriptions
+/// consists of lists of add and replacewith constructs. They describe, how to construct a new goal
+/// out of the old one by adding or replacing parts of the sequent. Each of these lists describe a
+/// new goal, whereas if no such list exists, means that the goal is closed.
+///
+/// The find part of a taclet is used to attached the rule to a term in the sequent of the current
+/// goal. Therefore the term of the sequent has to match the schema as found in the taclet's find
+/// part. The taclet is then attached to this term, more precise not the taclet itself, but an
+/// application object of this taclet (see [TacletApp][TacletApp]. When
+/// this attached taclet application object is applied, the new goals are constructed as described
+/// by
+/// the goal descriptions. For example
+///
+/// <code>
+/// find (A | B ==>) replacewith ( A ==> ); replacewith(B ==>)
+/// </code>
+///
+/// creates two new goals, where the first has been built by replacing <code> A | B </code> with
+/// <code>A</code> and the second one by replacing <code>A | B</code> with <code>B</code>. For a
+/// complete description of the syntax and semantics of taclets consult the KeY-Manual. The objects
+/// of this class serve different purposes: First they represent the syntactical structure of a
+/// taclet, but they also include the taclet interpreter isself. The taclet interpreter knows two
+/// modes: the match and the execution mode. The match mode tries to find a a mapping from
+/// schemavariables to a given term or formula. In the execution mode, a given goal is manipulated
+/// in
+/// the manner as described by the goal descriptions.
+///
+///
+/// But an object of this class neither copies or split the goal, nor it iterates through a sequent
+/// looking where it can be applied, these tasks have to be done in advance. For example by one of
+/// the following classes [RuleAppIndex][RuleAppIndex] or
+/// [TacletAppIndex][TacletAppIndex] or
+/// [TacletApp][TacletApp]
+///
+public abstract class SMLTaclet extends Taclet implements Rule {
 
     /// Integer to cache the hashcode
     private int hashcode = 0;
 
     /* TODO: find better solution */
     private final boolean surviveSymbExec;
-
-
 
     /// creates a Taclet (originally known as Schematic Theory Specific Rules)
     ///
@@ -111,11 +146,6 @@ public abstract class SMLTaclet extends Taclet {
     }
 
     @Override
-    public ImmutableSet<SchemaVariable> getAssumesAndFindVariables() {
-        return null;
-    }
-
-    @Override
     public Taclet setName(String name) {
         return null;
     }
@@ -123,5 +153,49 @@ public abstract class SMLTaclet extends Taclet {
     public boolean getSurviveSymbExec() {
         return surviveSymbExec;
     }
+
+
+    /// return true if <code>o</code> is a taclet of the same name and <code>o</code> and
+    /// <code>this</code> contain no mutually exclusive taclet options.
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+
+        if (o == null || o.getClass() != this.getClass()) {
+            return false;
+        }
+
+        final SMLTaclet t2 = (SMLTaclet) o;
+        if (!name.equals(t2.name)) {
+            return false;
+        }
+
+        if ((assumesSequent == null && t2.assumesSequent != null)
+                || (assumesSequent != null && t2.assumesSequent == null)) {
+            return false;
+        } else if (assumesSequent != null && !assumesSequent.equals(t2.assumesSequent)) {
+            return false;
+        }
+
+        if (!choices.equals(t2.choices)) {
+            return false;
+        }
+
+        return goalTemplates.equals(t2.goalTemplates);
+    }
+
+    @Override
+    public int hashCode() {
+        if (hashcode == 0) {
+            hashcode = 37 * name.hashCode() + 17;
+            if (hashcode == 0) {
+                hashcode = -1;
+            }
+        }
+        return hashcode;
+    }
+
 
 }
