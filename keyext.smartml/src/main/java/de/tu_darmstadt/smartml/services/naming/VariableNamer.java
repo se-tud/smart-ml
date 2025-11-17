@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import de.tu_darmstadt.smartml.program.decl.ConstructorDecl;
 import org.key_project.logic.Name;
 import org.key_project.logic.Named;
 import org.key_project.logic.Term;
@@ -30,6 +29,7 @@ import de.tu_darmstadt.smartml.logic.op.SModality;
 import de.tu_darmstadt.smartml.program.PosInProgram;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import de.tu_darmstadt.smartml.program.abstraction.Type;
+import de.tu_darmstadt.smartml.program.decl.ConstructorDecl;
 import de.tu_darmstadt.smartml.program.expr.Expr;
 import de.tu_darmstadt.smartml.program.stmt.Block;
 import de.tu_darmstadt.smartml.program.stmt.EmptyStatement;

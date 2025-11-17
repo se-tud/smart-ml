@@ -411,6 +411,15 @@ public class ExpressionBuilder extends DefaultBuilder {
     }
 
     @Override
+    public Object visitBoolean_literal(KeYSmartMLDLParser.Boolean_literalContext ctx) {
+        if (ctx.TRUE() != null) {
+            return capsulateTf(ctx, () -> getTermFactory().createTerm(Junctor.TRUE));
+        } else {
+            return capsulateTf(ctx, () -> getTermFactory().createTerm(Junctor.FALSE));
+        }
+    }
+
+    @Override
     public Object visitBracket_term(KeYSmartMLDLParser.Bracket_termContext ctx) {
         Term t = accept(ctx.primitive_labeled_term());
         /*

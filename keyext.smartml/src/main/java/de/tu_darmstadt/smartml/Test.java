@@ -9,7 +9,6 @@ import java.nio.file.Path;
 
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
 import de.tu_darmstadt.smartml.logic.SmartMLBlock;
-import de.tu_darmstadt.smartml.program.Program;
 import de.tu_darmstadt.smartml.program.SmartMLProgramElement;
 import de.tu_darmstadt.smartml.program.SmartMLReader;
 import de.tu_darmstadt.smartml.services.Services;

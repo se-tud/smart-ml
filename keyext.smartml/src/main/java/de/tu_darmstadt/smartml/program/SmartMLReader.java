@@ -3,9 +3,6 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.program;
 
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.jspecify.annotations.NonNull;
 import org.key_project.logic.Namespace;
 
 import de.tu_darmstadt.smartml.logic.NamespaceSet;
@@ -13,7 +10,11 @@ import de.tu_darmstadt.smartml.logic.SmartMLBlock;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
 import de.tu_darmstadt.smartml.parser.SmartMLLexer;
 import de.tu_darmstadt.smartml.parser.SmartMLParser;
+import de.tu_darmstadt.smartml.program.stmt.Block;
 import de.tu_darmstadt.smartml.services.Services;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Reader that parses SmartML source text into a SmartMLBlock (Program AST).
@@ -39,15 +40,15 @@ public class SmartMLReader {
             Namespace<@NonNull ProgramVariable> programVariableNamespace,
             String smartML) {
 
-        var lexer  = new SmartMLLexer(CharStreams.fromString(smartML));
+        var lexer = new SmartMLLexer(CharStreams.fromString(smartML));
         var tokens = new CommonTokenStream(lexer);
         var parser = new SmartMLParser(tokens);
 
-        SmartMLParser.ProgramContext ctx = parser.program();
+        SmartMLParser.StatBlockContext ctx = parser.statBlock();
 
         // Convert the parse tree into a Program AST
         var converter = new Converter(services);
-        Program program = converter.convertProgram(ctx);
+        Block program = converter.convertBlock(ctx);
 
         return new SmartMLBlock(program);
     }

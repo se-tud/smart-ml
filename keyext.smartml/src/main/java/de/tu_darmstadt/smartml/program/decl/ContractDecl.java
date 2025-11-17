@@ -16,10 +16,10 @@ public final class ContractDecl extends AbstractSmartMLElement implements Decl {
     private final List<? extends SmartMLProgramElement> invariants;
 
     public ContractDecl(String name,
-                        List<? extends SmartMLProgramElement> state,
-                        List<? extends SmartMLProgramElement> members,
-                        List<? extends SmartMLProgramElement> invariants) {
-        super(concat(state, members, invariants));   // <<< important
+            List<? extends SmartMLProgramElement> state,
+            List<? extends SmartMLProgramElement> members,
+            List<? extends SmartMLProgramElement> invariants) {
+        super(concat(state, members, invariants)); // <<< important
         this.name = name;
         this.state = List.copyOf(state);
         this.members = List.copyOf(members);
@@ -32,16 +32,19 @@ public final class ContractDecl extends AbstractSmartMLElement implements Decl {
             List<? extends SmartMLProgramElement> a,
             List<? extends SmartMLProgramElement> b,
             List<? extends SmartMLProgramElement> c) {
-        var out = new java.util.ArrayList<SmartMLProgramElement>(a.size()+b.size()+c.size());
-        out.addAll(a); out.addAll(b); out.addAll(c);
+        var out = new java.util.ArrayList<SmartMLProgramElement>(a.size() + b.size() + c.size());
+        out.addAll(a);
+        out.addAll(b);
+        out.addAll(c);
         return out;
     }
 
     @Override
-    public void visit(Visitor v) { v.performActionOnContractDecl(this);    }
+    public void visit(Visitor v) { v.performActionOnContractDecl(this); }
 
     public List<? extends SmartMLProgramElement> state() { return state; }
+
     public List<? extends SmartMLProgramElement> members() { return members; }
+
     public List<? extends SmartMLProgramElement> invariants() { return invariants; }
 }
-

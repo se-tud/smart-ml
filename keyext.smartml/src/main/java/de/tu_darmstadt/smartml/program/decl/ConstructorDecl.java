@@ -21,6 +21,7 @@ public final class ConstructorDecl extends AbstractSmartMLElement implements Dec
     }
 
     public List<? extends SmartMLProgramElement> parameters() { return parameters; }
+
     public Block body() { return body; }
 
     public void visit(Visitor v) { v.performActionOnConstructorDecl(this); }
@@ -29,7 +30,8 @@ public final class ConstructorDecl extends AbstractSmartMLElement implements Dec
             List<? extends SmartMLProgramElement> params, Block body) {
         var out = new java.util.ArrayList<SmartMLProgramElement>(params.size() + 1);
         out.addAll(params);
-        if (body != null) out.add(body);
+        if (body != null)
+            out.add(body);
         return out;
     }
 }

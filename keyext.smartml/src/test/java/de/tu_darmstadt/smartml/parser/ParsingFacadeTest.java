@@ -16,7 +16,9 @@ import de.tu_darmstadt.smartml.logic.op.Junctor;
 import de.tu_darmstadt.smartml.logic.op.LogicVariable;
 import de.tu_darmstadt.smartml.logic.op.Quantifier;
 import de.tu_darmstadt.smartml.logic.op.SFunction;
+import de.tu_darmstadt.smartml.logic.op.SModality;
 import de.tu_darmstadt.smartml.logic.sort.SortImpl;
+import de.tu_darmstadt.smartml.program.stmt.Block;
 import de.tu_darmstadt.smartml.services.Services;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -58,6 +60,14 @@ class ParsingFacadeTest {
         return new SFunction(new Name(name), SmartMLDLTheory.FORMULA, new ImmutableArray<>(), true);
     }
 
+    @Test
+    void parseTruthConstants() {
+        KeYIO io = new KeYIO(services);
+        final Term trueTerm = io.parseExpression("true");
+        assertSame(Junctor.TRUE, trueTerm.op());
+        final Term falseTerm = io.parseExpression("false");
+        assertSame(Junctor.FALSE, falseTerm.op());
+    }
 
     @Test
     void parsePropositionalFormula() {
@@ -107,6 +117,31 @@ class ParsingFacadeTest {
         assertEquals(2, ((LogicVariable) term.sub(0).sub(0).sub(1).op()).getIndex());
     }
 
+    @Test
+    void parseEmptyDiamondFormula() {
+        KeYIO io = new KeYIO(services);
+        final Term term = io.parseExpression("\\<{ }\\>true");
+        assertInstanceOf(SModality.class, term.op());
+        assertTrue(((SModality) term.op()).kind() == SModality.SmartMLModalityKind.DIA);
+        assert (((SModality) term.op()).programBlock().program() instanceof Block);
+        Block block = (Block) ((SModality) term.op()).programBlock().program();
+        assertTrue(block.getChildCount() == 0);
+    }
+
+
+
+    @Test
+    void parseSimpleAssignmentFormula() {
+        KeYIO io = new KeYIO(services);
+        final Term term = io.parseExpression("\\<{ int i = 1; }\\>true");
+        assertInstanceOf(SModality.class, term.op());
+        assertTrue(((SModality) term.op()).kind() == SModality.SmartMLModalityKind.DIA);
+        assert (((SModality) term.op()).programBlock().program() instanceof Block);
+        Block block = (Block) ((SModality) term.op()).programBlock().program();
+        assertTrue(block.getChildCount() == 1);
+        // assertTrue(block.getChild(0) instanceof Decl); local variable declaration representation
+        // in AST
+    }
 
     @Test
     void parseSequent() {
