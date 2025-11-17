@@ -18,6 +18,7 @@ import de.tu_darmstadt.smartml.logic.op.Quantifier;
 import de.tu_darmstadt.smartml.logic.op.SFunction;
 import de.tu_darmstadt.smartml.logic.op.SModality;
 import de.tu_darmstadt.smartml.logic.sort.SortImpl;
+import de.tu_darmstadt.smartml.program.stmt.Assign;
 import de.tu_darmstadt.smartml.program.stmt.Block;
 import de.tu_darmstadt.smartml.services.Services;
 import org.junit.jupiter.api.BeforeEach;
@@ -137,7 +138,7 @@ class ParsingFacadeTest {
         assert (((SModality) term.op()).programBlock().program() instanceof Block);
         Block block = (Block) ((SModality) term.op()).programBlock().program();
         assertTrue(block.getChildCount() == 1);
-        // assertTrue(block.getChild(0) instanceof Decl); local variable declaration representation
+        assertTrue(block.getChild(0) instanceof Assign);// local variable declaration representation
         // in AST
     }
 

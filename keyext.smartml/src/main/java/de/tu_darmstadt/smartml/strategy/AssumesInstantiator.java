@@ -13,11 +13,12 @@ public class AssumesInstantiator {
     }
 
     public void findAssumesFormulaInstantiations() {
+        throw new RuntimeException("Not implemented yet");
 
     }
 
     public ImmutableList<NoPosTacletApp> getResults() {
 
-
+        throw new RuntimeException("Not implemented yet");
     }
 }

@@ -62,13 +62,13 @@ public class PosTacletApp extends TacletApp {
     }
 
     @Override
-    boolean complete() {
+    public boolean complete() {
         return false;
     }
 
     @Override
     @Nullable
-    PosInOccurrence posInOccurrence() {
+    public PosInOccurrence posInOccurrence() {
         return null;
     }
 }
