@@ -17,4 +17,8 @@ public class StrategySettings {
     public void setStrategy(Name strategy) {
         throw new RuntimeException("Not implemented yet");
     }
+
+    public void setActiveStrategyProperties(StrategyProperties p) {
+        throw new RuntimeException("Not implemented yet");
+    }
 }

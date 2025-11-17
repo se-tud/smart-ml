@@ -3,11 +3,18 @@
  * SPDX-License-Identifier: GPL-2.0-only */
 package de.tu_darmstadt.smartml.strategy;
 
+import org.key_project.prover.strategy.costbased.RuleAppCost;
+
 import de.tu_darmstadt.smartml.calculus.proof.Goal;
 import de.tu_darmstadt.smartml.calculus.rules.NoPosTacletApp;
 
-public class NoFindTacletAppContainer extends RuleAppContainer {
-    public NoFindTacletAppContainer(NoPosTacletApp noPosTacletApp, Goal cost, long localAge) {
-        super();
+public class NoFindTacletAppContainer extends TacletAppContainer {
+    public NoFindTacletAppContainer(NoPosTacletApp app, RuleAppCost cost, long localAge) {
+        super(app, cost, 0);
+    }
+
+    @Override
+    protected boolean isStillApplicable(Goal p_goal) {
+        throw new RuntimeException("Not implemented yet");
     }
 }
