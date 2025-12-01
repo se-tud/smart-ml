@@ -7,19 +7,16 @@ import org.key_project.logic.Term;
 import org.key_project.logic.op.QuantifiableVariable;
 import org.key_project.util.collection.ImmutableArray;
 
-import de.tu_darmstadt.smartml.logic.op.BoundVariable;
 import de.tu_darmstadt.smartml.logic.op.LogicVariable;
 import org.jspecify.annotations.Nullable;
 
 public class Subst {
-    private final BoundVariable v;
     private final Term s;
     private final TermBuilder tb;
 
     private int index = 1;
 
-    public Subst(BoundVariable v, Term sub, TermBuilder tb) {
-        this.v = v;
+    public Subst(Term sub, TermBuilder tb) {
         this.s = sub;
         this.tb = tb;
     }

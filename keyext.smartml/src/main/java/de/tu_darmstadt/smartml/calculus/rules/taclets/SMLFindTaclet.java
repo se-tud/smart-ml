@@ -46,10 +46,10 @@ public abstract class SMLFindTaclet extends SMLTaclet {
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap, ChoiceExpr choices,
             boolean surviveSymExec,
-            ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
-            surviveSymExec,
-            tacletAnnotations);
+            surviveSymExec, tacletAnnotations, noFreeVarIns);
     }
 
 

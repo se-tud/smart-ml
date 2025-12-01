@@ -65,6 +65,7 @@ import org.jspecify.annotations.NonNull;
 ///
 public abstract class SMLTaclet extends Taclet implements Rule {
 
+    protected final ImmutableList<SchemaVariable> noFreeVarIns;
     /// Integer to cache the hashcode
     private int hashcode = 0;
 
@@ -86,11 +87,14 @@ public abstract class SMLTaclet extends Taclet implements Rule {
             ImmutableList<TacletGoalTemplate> goalTemplates,
             ImmutableList<RuleSet> ruleSets,
             TacletAttributes attrs,
-            ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap, ChoiceExpr choices,
-            boolean surviveSmbExec, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
+            ChoiceExpr choices,
+            boolean surviveSmbExec, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
             tacletAnnotations);
         this.surviveSymbExec = surviveSmbExec;
+        this.noFreeVarIns = noFreeVarIns;
     }
 
     @EnsuresNonNull("matcher")

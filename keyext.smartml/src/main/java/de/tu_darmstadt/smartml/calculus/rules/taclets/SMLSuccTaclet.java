@@ -44,10 +44,10 @@ public class SMLSuccTaclet extends SMLFindTaclet {
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap,
             ChoiceExpr choices,
-            boolean surviveSymbExec, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            boolean surviveSymbExec, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
-            surviveSymbExec,
-            tacletAnnotations);
+            surviveSymbExec, tacletAnnotations, noFreeVarIns);
     }
 
     @Override
@@ -74,7 +74,7 @@ public class SMLSuccTaclet extends SMLFindTaclet {
         final TacletAttributes attrs = new TacletAttributes(displayName(), trigger);
         return new SMLSuccTaclet(new Name(s), (Sequent) find, applPart, goalTemplates(),
             getRuleSets(), attrs,
-            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations);
+            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations, noFreeVarIns);
     }
 
 }

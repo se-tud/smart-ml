@@ -43,6 +43,7 @@ import de.tu_darmstadt.smartml.calculus.rules.matching.inst.GenericSortException
 import de.tu_darmstadt.smartml.calculus.rules.matching.inst.MatchConditions;
 import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
 import de.tu_darmstadt.smartml.calculus.rules.sv.FormulaSV;
+import de.tu_darmstadt.smartml.calculus.rules.sv.ModalOperatorSV;
 import de.tu_darmstadt.smartml.calculus.rules.sv.ProgramSV;
 import de.tu_darmstadt.smartml.calculus.rules.sv.SkolemTermSV;
 import de.tu_darmstadt.smartml.calculus.rules.sv.TermSV;
@@ -52,8 +53,10 @@ import de.tu_darmstadt.smartml.calculus.rules.taclets.NewVarcond;
 import de.tu_darmstadt.smartml.calculus.rules.taclets.SMLFindTaclet;
 import de.tu_darmstadt.smartml.calculus.rules.taclets.SMLNoFindTaclet;
 import de.tu_darmstadt.smartml.calculus.rules.taclets.SMLRewriteTaclet;
+import de.tu_darmstadt.smartml.calculus.rules.taclets.TacletPrefix;
 import de.tu_darmstadt.smartml.calculus.rules.taclets.TacletSchemaVariableCollector;
 import de.tu_darmstadt.smartml.logic.TermBuilder;
+import de.tu_darmstadt.smartml.logic.TermImpl;
 import de.tu_darmstadt.smartml.logic.op.BoundVariable;
 import de.tu_darmstadt.smartml.logic.op.LogicVariable;
 import de.tu_darmstadt.smartml.logic.op.ProgramVariable;
@@ -136,77 +139,7 @@ public abstract class TacletApp implements RuleApp {
     /// metavariables given by the mc object and forget the old ones
     public abstract TacletApp setMatchConditions(MatchResultInfo mc, Services services);
 
-    /// checks if the variable conditions of type 'x not free in y' are hold by the found
-    /// instantiations. The variable conditions is used implicit in the prefix. (Used to calculate
-    /// the prefix)
-    ///
-    /// @param taclet the Taclet that is tried to be instantiated. A match for the find (or/and if)
-    /// has been found.
-    /// @param instantiations the SVInstantiations so that the find(if) expression matches
-    /// @param pos the PosInOccurrence where the Taclet is applied
-    /// @return true iff all variable conditions x not free in y are hold
-    public static boolean checkVarCondNotFreeIn(Taclet taclet,
-            org.key_project.prover.rules.instantiation.SVInstantiations instantiations,
-            PosInOccurrence pos) {
-        /*
-         * TODO: Now that we work with DeBruijn indices, we only need to ensure that any variable
-         * with index `n` has
-         * at least `n` binding ops above it.
-         */
-        return true;
-    }
 
-    protected static boolean checkNoFreeVars(org.key_project.prover.rules.Taclet taclet) {
-        // TODO
-        return true;
-    }
-
-    public static boolean checkNoFreeVars(Taclet taclet,
-            org.key_project.prover.rules.instantiation.SVInstantiations instantiations,
-            PosInOccurrence pos) {
-        for (var pair : ((SVInstantiations) instantiations)
-                .getInstantiationMap()) {
-            final var sv = pair.key();
-            if (sv instanceof TermSV || sv instanceof FormulaSV) {
-                // TODO: Is this enough? Do we need, e.g., sort checks?
-                var t = (Term) instantiations.getInstantiation(sv);
-                if (isFreeAtPos(pos, maximalDeBruijnIndex(t))) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
-    }
-
-    private static int maximalDeBruijnIndex(Term t) {
-        int max = 0;
-        // No need to check for other types of QuantifiedVariable; in the instantiations, no SV cam
-        // appear
-        if (t.op() instanceof LogicVariable lv) {
-            max = lv.getIndex();
-        }
-        for (int i = 0; i < t.arity(); ++i) {
-            int index = maximalDeBruijnIndex(t.sub(i));
-            int boundHere = t.varsBoundHere(i).size();
-            index -= boundHere;
-            if (index > max) {
-                max = index;
-            }
-        }
-        return max;
-    }
-
-    private static boolean isFreeAtPos(PosInOccurrence pos, int deBruijn) {
-        PIOPathIterator it = pos.iterator();
-        int i;
-
-        while ((i = it.next()) != -1) {
-            --deBruijn;
-        }
-
-        return deBruijn > 0;
-    }
 
     /// resolves collisions between bound SchemaVariables in an SVInstantiation
     ///
@@ -328,6 +261,117 @@ public abstract class TacletApp implements RuleApp {
             throw new RuntimeException(
                 "taclet application with unsatisfied 'checkPrefix': " + this);
         }
+    }
+
+
+    /// checks if the variable conditions of type 'x not free in y' are hold by the found
+    /// instantiations. The variable conditions is used implicit in the prefix. (Used to calculate
+    /// the prefix)
+    ///
+    /// @param taclet the Taclet that is tried to be instantiated. A match for the find (or/and if)
+    /// has been found.
+    /// @param instantiations the SVInstantiations so that the find(if) expression matches
+    /// @param pos the PosInOccurrence where the Taclet is applied
+    /// @return true iff all variable conditions x not free in y are hold
+    public static boolean checkVarCondNotFreeIn(Taclet taclet,
+            org.key_project.prover.rules.instantiation.SVInstantiations instantiations,
+            PosInOccurrence pos) {
+        for (var pair : instantiations.getInstantiationMap()) {
+            final var sv = pair.key();
+
+            if (sv instanceof ModalOperatorSV || sv instanceof ProgramSV || sv instanceof VariableSV
+                    || sv instanceof SkolemTermSV) {
+                continue;
+            }
+
+            final var prefix = taclet.getPrefix(sv);
+
+            if (pos == null && prefix.context()) {
+                continue;
+            }
+
+            final int boundVarCount =
+                boundAtOccurrenceCount((TacletPrefix) prefix, instantiations, pos);
+            final Term inst = instantiations.getInstantiation(sv);
+            if (((TermImpl) inst).getMaxDebruijnIndex() > boundVarCount) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static int boundAtOccurrenceCount(TacletPrefix prefix,
+            org.key_project.prover.rules.instantiation.SVInstantiations instantiations,
+            @Nullable PosInOccurrence pos) {
+        int result = prefix.prefixLength();
+
+        if (pos != null && prefix.context()) {
+            result += countBoundVarsAbove(pos);
+        }
+        return result;
+    }
+
+    private static int countBoundVarsAbove(@Nullable PosInOccurrence pos) {
+        int result = 0;
+        PIOPathIterator it = pos.iterator();
+        int i;
+        while ((i = it.next()) != -1) {
+            if (it.getSubTerm().op().bindVarsAt(i)) {
+                result += it.getSubTerm().boundVars().size();
+            }
+        }
+        return result;
+    }
+
+    public static boolean checkNoFreeVars(Taclet taclet,
+            org.key_project.prover.rules.instantiation.SVInstantiations instantiations,
+            PosInOccurrence pos) {
+        for (var pair : ((SVInstantiations) instantiations)
+                .getInstantiationMap()) {
+            final var sv = pair.key();
+            if (sv instanceof TermSV || sv instanceof FormulaSV) {
+                // TODO: Is this enough? Do we need, e.g., sort checks?
+                var t = (Term) instantiations.getInstantiation(sv);
+                if (isFreeAtPos(pos, maximalDeBruijnIndex(t))) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
+
+    protected static boolean checkNoFreeVars(org.key_project.prover.rules.Taclet taclet) {
+        // TODO
+        return true;
+    }
+
+    private static int maximalDeBruijnIndex(Term t) {
+        int max = 0;
+        // No need to check for other types of QuantifiedVariable; in the instantiations, no SV cam
+        // appear
+        if (t.op() instanceof LogicVariable lv) {
+            max = lv.getIndex();
+        }
+        for (int i = 0; i < t.arity(); ++i) {
+            int index = maximalDeBruijnIndex(t.sub(i));
+            int boundHere = t.varsBoundHere(i).size();
+            index -= boundHere;
+            if (index > max) {
+                max = index;
+            }
+        }
+        return max;
+    }
+
+    private static boolean isFreeAtPos(PosInOccurrence pos, int deBruijn) {
+        PIOPathIterator it = pos.iterator();
+
+        while (it.next() != -1) {
+            --deBruijn;
+        }
+
+        return deBruijn > 0;
     }
 
     /// collects all bound vars that are bound above the subterm described by the given term

@@ -24,6 +24,7 @@ import org.key_project.util.collection.ImmutableSet;
 import de.tu_darmstadt.smartml.calculus.rules.execution.RewriteTacletExecutor;
 import de.tu_darmstadt.smartml.calculus.rules.matching.inst.MatchConditions;
 import de.tu_darmstadt.smartml.calculus.rules.matching.inst.SVInstantiations;
+import de.tu_darmstadt.smartml.logic.TermImpl;
 import de.tu_darmstadt.smartml.logic.op.IfThenElse;
 import de.tu_darmstadt.smartml.logic.op.Junctor;
 import de.tu_darmstadt.smartml.logic.op.SModality;
@@ -57,9 +58,10 @@ public class SMLRewriteTaclet extends SMLFindTaclet {
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap,
             ChoiceExpr choices,
             boolean surviveSymbExec,
-            ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
-            surviveSymbExec, tacletAnnotations);
+            surviveSymbExec, tacletAnnotations, noFreeVarIns);
     }
 
     @Override
@@ -78,8 +80,9 @@ public class SMLRewriteTaclet extends SMLFindTaclet {
     /// @param t the Term to check
     /// @return false if vetoing
     private boolean veto(Term t) {
-        return !t.freeVars().isEmpty();
+        return ((TermImpl) t).getMaxDebruijnIndex() > 0;
     }
+
 
     /// For taclets with <code>getSameUpdatePrefix ()</code>, collect the updates above
     /// <code>p_pos</code> and add them to the update context of the instantiations object
@@ -172,6 +175,6 @@ public class SMLRewriteTaclet extends SMLFindTaclet {
 
         return new SMLRewriteTaclet(new Name(s), (Term) find, applPart, goalTemplates(),
             getRuleSets(), attrs,
-            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations);
+            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations, noFreeVarIns);
     }
 }

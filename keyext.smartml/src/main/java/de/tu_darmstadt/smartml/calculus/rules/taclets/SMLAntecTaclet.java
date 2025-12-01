@@ -42,10 +42,10 @@ public class SMLAntecTaclet extends SMLFindTaclet {
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, TacletPrefix> prefixMap,
             ChoiceExpr choices,
-            boolean surviveSymbExec, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            boolean surviveSymbExec, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, find, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
-            surviveSymbExec,
-            tacletAnnotations);
+            surviveSymbExec, tacletAnnotations, noFreeVarIns);
     }
 
     @Override
@@ -74,6 +74,6 @@ public class SMLAntecTaclet extends SMLFindTaclet {
 
         return new SMLAntecTaclet(new Name(s), (Sequent) find, applPart, goalTemplates(),
             getRuleSets(), attrs,
-            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations);
+            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations, noFreeVarIns);
     }
 }

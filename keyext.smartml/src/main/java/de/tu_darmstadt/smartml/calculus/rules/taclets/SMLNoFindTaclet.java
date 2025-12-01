@@ -42,10 +42,10 @@ public class SMLNoFindTaclet extends SMLTaclet {
             TacletAttributes attrs,
             ImmutableMap<@NonNull SchemaVariable, org.key_project.prover.rules.TacletPrefix> prefixMap,
             ChoiceExpr choices,
-            boolean surviveSymbExec, ImmutableSet<TacletAnnotation> tacletAnnotations) {
+            boolean surviveSymbExec, ImmutableSet<TacletAnnotation> tacletAnnotations,
+            ImmutableList<@NonNull SchemaVariable> noFreeVarIns) {
         super(name, null, applPart, goalTemplates, ruleSets, attrs, prefixMap, choices,
-            surviveSymbExec,
-            tacletAnnotations);
+            surviveSymbExec, tacletAnnotations, noFreeVarIns);
     }
 
     @Override
@@ -78,6 +78,6 @@ public class SMLNoFindTaclet extends SMLTaclet {
         final TacletAttributes attrs = new TacletAttributes(displayName(), trigger);
 
         return new SMLNoFindTaclet(new Name(s), applPart, goalTemplates(), getRuleSets(), attrs,
-            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations);
+            prefixMap, choices, getSurviveSymbExec(), tacletAnnotations, noFreeVarIns);
     }
 }
